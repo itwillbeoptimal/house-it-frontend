@@ -25,7 +25,7 @@ export default defineConfig({
         name: '하우스잇',
         short_name: '하우스잇',
         description: '생활에서 생기는 모든 질문의 답, 하우스잇',
-        theme_color: '#5AD3F5',
+        theme_color: '#f7f9f9',
         icons: [
           {
             src: 'favicon.svg',
