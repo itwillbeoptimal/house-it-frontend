@@ -14,18 +14,36 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: 'prompt',
-      injectRegister: false,
+      injectRegister: 'auto',
 
       pwaAssets: {
-        disabled: false,
-        config: true,
+        disabled: true,
       },
 
       manifest: {
-        name: 'house-it',
-        short_name: 'house-it',
+        name: '하우스잇',
+        short_name: '하우스잇',
         description: '생활에서 생기는 모든 질문의 답, 하우스잇',
         theme_color: '#5AD3F5',
+        icons: [
+          {
+            src: 'favicon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+          },
+          {
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+        ],
       },
 
       workbox: {
