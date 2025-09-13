@@ -20,7 +20,7 @@ const globalStyles = css`
     background: none;
     cursor: pointer;
     touch-action: manipulation;
-    min-height: 44px;
+    min-height: 32px;
   }
 
   input,
@@ -42,6 +42,7 @@ const globalStyles = css`
   }
 
   * {
+    color: ${theme.COLORS.LABEL.PRIMARY};
     font-family:
       'Pretendard Variable',
       Pretendard,
@@ -58,6 +59,7 @@ const globalStyles = css`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: -0.03em;
+    overscroll-behavior-y: none;
   }
 
   html {
