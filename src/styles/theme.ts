@@ -1,25 +1,32 @@
 const theme = {
   COLORS: {
     MAIN: {
-      PRIMARY: '#5ad3f5',
-      SECONDARY: '#b4e5f3',
-      TERTIARY: '#e4f7fd',
+      PRIMARY: '#6c2eff',
+      SECONDARY: '#c4abff',
+      TERTIARY: '#f0eaff',
     },
     LABEL: {
       PRIMARY: '#111111',
       SECONDARY: 'rgba(60, 60, 67, 0.6)',
       TERTIARY: 'rgba(60, 60, 67, 0.3)',
       QUATERNARY: 'rgba(60, 60, 67, 0.18)',
+      ALERT: '#f03e3e',
+      SUCCESS: '#37b24d',
+      INFO: '#4263eb',
     },
+    BACKGROUND: '#f7f8fd',
     GRAY: {
-      1: '#8e8e93',
-      2: '#aeaeb2',
-      3: '#c7c7cc',
-      4: '#d1d1d6',
-      5: '#e5e5ea',
-      6: '#f2f2f7',
+      0: '#f8f9fa',
+      1: '#f1f3f5',
+      2: '#e9ecef',
+      3: '#dee2e6',
+      4: '#ced4da',
+      5: '#adb5bd',
+      6: '#868e96',
+      7: '#495057',
+      8: '#343a40',
+      9: '#212529',
     },
-    BACKGROUND: '#f7f9f9',
   },
 } as const;
 
