@@ -4,7 +4,7 @@ import RepairIcon from '@/assets/icons/repair.png';
 import FinanceIcon from '@/assets/icons/finance.png';
 import InteriorIcon from '@/assets/icons/interior.png';
 import HealthIcon from '@/assets/icons/health.png';
-import BabyIcon from '@/assets/icons/baby.png';
+import FamilyIcon from '@/assets/icons/family.png';
 import DeviceIcon from '@/assets/icons/device.png';
 
 export const MAGAZINE_CATEGORIES = {
@@ -60,7 +60,7 @@ export const QUIZ_CATEGORIES = {
   },
   7: {
     title: '육아 · 반려동물',
-    iconUrl: BabyIcon,
+    iconUrl: FamilyIcon,
   },
   8: {
     title: '스마트홈 · 가전',
