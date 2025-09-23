@@ -1,5 +1,5 @@
 import React from 'react';
-import type { MagazineItem } from '@/pages/Magazine/types/Magazine';
+import type { MagazineItem } from '@/pages/Magazine/types';
 import * as S from '@/pages/Magazine/components/MagazineCard/MagazineCard.styles';
 
 interface MagazineCardProps extends MagazineItem {

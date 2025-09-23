@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import type { MagazineItem } from '@/pages/Magazine/types/Magazine';
+import type { MagazineItem } from '@/pages/Magazine/types';
 import * as S from '@/pages/Magazine/Magazine.styles';
 import CategoryTab from '@/components/CategoryTab';
 import MagazineCard from '@/pages/Magazine/components/MagazineCard';
