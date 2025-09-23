@@ -10,6 +10,7 @@ export const Container = styled.div<ContainerProps>`
   flex-direction: column;
   width: 100%;
   height: 100dvh;
+  padding: 0 20px 20px 20px;
   background-color: ${({ backgroundColor }) => backgroundColor || 'inherit'};
 `;
 
@@ -22,7 +23,6 @@ export const ContentArea = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 0 20px 20px 20px;
   overflow-y: auto;
 `;
 

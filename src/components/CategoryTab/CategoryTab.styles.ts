@@ -2,7 +2,6 @@ import styled from '@emotion/styled';
 
 export const Container = styled.div`
   display: flex;
-  padding: 0 20px;
   gap: 16px;
   background-color: ${(props) => props.theme.COLORS.BACKGROUND};
   overflow-x: auto;
