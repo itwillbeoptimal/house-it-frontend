@@ -1,17 +1,12 @@
 import styled from '@emotion/styled';
 
-interface ContainerProps {
-  backgroundColor?: string;
-}
-
-export const Container = styled.div<ContainerProps>`
+export const Container = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
   width: 100%;
   height: 100dvh;
   padding: 0 20px 20px 20px;
-  background-color: ${({ backgroundColor }) => backgroundColor || 'inherit'};
 `;
 
 export const TabWrapper = styled.div`
