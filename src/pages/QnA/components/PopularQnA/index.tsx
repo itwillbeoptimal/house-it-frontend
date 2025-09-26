@@ -10,7 +10,7 @@ interface PopularQnAProps {
 const PopularQnA: React.FC<PopularQnAProps> = ({ items }) => {
   return (
     <S.Container>
-      <S.Title>인기있는 질문</S.Title>
+      <S.SectionTitle>인기있는 질문</S.SectionTitle>
       <S.ScrollContainer>
         <S.CardList>
           {items.map((item) => (

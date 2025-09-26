@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 
 export const Container = styled.section``;
 
-export const Title = styled.div`
+export const SectionTitle = styled.h2`
   padding: 0 20px;
   margin-bottom: 16px;
   font-family: Paperozi;
