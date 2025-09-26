@@ -23,7 +23,7 @@ export const ContentArea = styled.div`
 export const QnAList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 `;
 
 export const EmptyState = styled.div`
@@ -34,7 +34,9 @@ export const EmptyState = styled.div`
 `;
 
 export const EmptyMessage = styled.p`
-  color: ${({ theme }) => theme.COLORS.LABEL.TERTIARY};
+  margin-bottom: 4px;
+  color: ${(props) => props.theme.COLORS.LABEL.SECONDARY};
+  font-weight: 500;
   font-size: 16px;
 `;
 
