@@ -53,6 +53,7 @@ export const CompleteFilter = styled.button`
   align-items: center;
   padding: 0 4px;
   gap: 4px;
+  font-weight: 500;
 `;
 
 export const MyQnAButton = styled.button`
@@ -60,6 +61,7 @@ export const MyQnAButton = styled.button`
   align-items: center;
   gap: 4px;
   color: ${(props) => props.theme.COLORS.MAIN.PRIMARY};
+  font-weight: 500;
 
   & svg {
     fill: ${(props) => props.theme.COLORS.MAIN.PRIMARY};
