@@ -5,6 +5,8 @@ import theme from '@/styles/theme';
 import GlobalStyle from '@/styles/GlobalStyle';
 import PWABadge from '@/PWABadge';
 import Layout from '@/components/Layout';
+import Modal from '@/components/Modal';
+import BottomSheet from '@/components/BottomSheet';
 import Magazine from '@/pages/Magazine';
 
 function App() {
@@ -20,6 +22,8 @@ function App() {
           </Routes>
         </Router>
         <PWABadge />
+        <Modal />
+        <BottomSheet />
       </ThemeProvider>
     </JotaiProvider>
   );
