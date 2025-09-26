@@ -5,17 +5,16 @@ import * as S from '@/pages/QnA/components/PopularQnA/PopularQnA.styles';
 
 interface PopularQnAProps {
   items: PopularQnAItem[];
-  onItemClick?: (id: number) => void;
 }
 
-const PopularQnA: React.FC<PopularQnAProps> = ({ items, onItemClick }) => {
+const PopularQnA: React.FC<PopularQnAProps> = ({ items }) => {
   return (
     <S.Container>
       <S.Title>인기있는 질문</S.Title>
       <S.ScrollContainer>
         <S.CardList>
           {items.map((item) => (
-            <QnACard key={item.id} {...item} isPopular onClick={onItemClick} />
+            <QnACard key={item.id} {...item} isPopular />
           ))}
         </S.CardList>
       </S.ScrollContainer>
