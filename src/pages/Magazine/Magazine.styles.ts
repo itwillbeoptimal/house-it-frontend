@@ -35,6 +35,8 @@ export const EmptyState = styled.div`
 `;
 
 export const EmptyMessage = styled.p`
-  color: ${({ theme }) => theme.COLORS.LABEL.TERTIARY};
+  margin-bottom: 4px;
+  color: ${(props) => props.theme.COLORS.LABEL.TERTIARY};
+  font-weight: 500;
   font-size: 16px;
 `;

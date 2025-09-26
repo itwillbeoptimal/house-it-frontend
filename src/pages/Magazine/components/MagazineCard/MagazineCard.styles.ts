@@ -59,7 +59,6 @@ export const CreatedAt = styled.span`
 export const Title = styled.h2`
   font-size: 21px;
   font-weight: 600;
-  color: ${(props) => props.theme.COLORS.LABEL.PRIMARY};
   margin-bottom: 4px;
 `;
 
