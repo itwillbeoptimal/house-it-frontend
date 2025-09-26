@@ -10,8 +10,13 @@ interface BottomTabItemProps {
   onClick: () => void;
 }
 
-const getInitialTab = (pathname: string): string => {
-  const currentTab = TABS.find((tab) => tab.path === pathname);
+const getActiveTabFromPath = (pathname: string): string => {
+  const currentTab = TABS.find((tab) => {
+    if (tab.path === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(tab.path);
+  });
   return currentTab ? currentTab.label : TABS[0].label;
 };
 
@@ -39,7 +44,7 @@ const BottomTab = () => {
   const location = useLocation();
 
   useEffect(() => {
-    setActiveTab(getInitialTab(location.pathname));
+    setActiveTab(getActiveTabFromPath(location.pathname));
   }, [location.pathname]);
 
   const handleTabClick = (tabName: string, path: string) => {
