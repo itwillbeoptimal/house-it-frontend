@@ -14,6 +14,7 @@ export const Container = styled.header`
   padding: 20px;
   margin: 0 auto;
   background-color: ${(props) => props.theme.COLORS.BACKGROUND};
+  z-index: 10;
 `;
 
 export const LogoButton = styled.button``;
