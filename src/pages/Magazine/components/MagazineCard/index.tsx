@@ -1,5 +1,6 @@
 import React from 'react';
 import type { MagazineItem } from '@/pages/Magazine/types';
+import { formatDate } from '@/utils/dateUtils';
 import * as S from '@/pages/Magazine/components/MagazineCard/MagazineCard.styles';
 
 interface MagazineCardProps extends MagazineItem {
@@ -35,7 +36,7 @@ const MagazineCard: React.FC<MagazineCardProps> = ({
           </S.ProfileWrapper>
           <S.AuthorMeta>
             <S.AuthorName>{author}</S.AuthorName>
-            <S.CreatedAt>{createdAt}</S.CreatedAt>
+            <S.CreatedAt>{formatDate(createdAt)}</S.CreatedAt>
           </S.AuthorMeta>
         </S.AuthorInfo>
         <S.Title>{title}</S.Title>

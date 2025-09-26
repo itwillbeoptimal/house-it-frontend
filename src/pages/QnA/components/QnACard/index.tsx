@@ -1,30 +1,14 @@
 import React from 'react';
 import type { QnAItem } from '@/pages/QnA/types';
+import { formatTimeAgo } from '@/utils/dateUtils';
 import { QNA_CATEGORIES } from '@/constants/categories';
 import * as S from '@/pages/QnA/components/QnACard/QnACard.styles';
+import { useNavigate } from 'react-router-dom';
 
 interface QnACardProps extends QnAItem {
   showCategoryBadge?: boolean;
   isPopular?: boolean;
-  onClick?: (id: number) => void;
 }
-
-const formatTimeAgo = (isoString: string): string => {
-  const now = new Date();
-  const createdAt = new Date(isoString);
-  const diffInMinutes = Math.floor(
-    (now.getTime() - createdAt.getTime()) / (1000 * 60),
-  );
-
-  if (diffInMinutes < 1) return '방금 전';
-  if (diffInMinutes < 60) return `${diffInMinutes}분 전`;
-
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  if (diffInHours < 24) return `${diffInHours}시간 전`;
-
-  const diffInDays = Math.floor(diffInHours / 24);
-  return `${diffInDays}일 전`;
-};
 
 const truncateContent = (content: string, maxLength: number = 100): string => {
   if (content.length <= maxLength) return content;
@@ -43,10 +27,11 @@ const QnACard: React.FC<QnACardProps> = ({
   isAnswered,
   showCategoryBadge = true,
   isPopular = false,
-  onClick,
 }) => {
+  const navigate = useNavigate();
+
   const handleClick = () => {
-    onClick?.(id);
+    navigate(`/qna/${id}`);
   };
 
   return (
