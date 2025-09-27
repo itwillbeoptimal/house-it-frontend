@@ -92,7 +92,6 @@ const globalStyles = css`
     background: none;
     cursor: pointer;
     touch-action: manipulation;
-    min-height: 32px;
   }
 
   input,
@@ -100,7 +99,6 @@ const globalStyles = css`
   select {
     outline: none;
     touch-action: manipulation;
-    min-height: 44px;
   }
 
   a {
