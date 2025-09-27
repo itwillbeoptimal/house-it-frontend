@@ -1,9 +1,12 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { QnAItem } from '@/pages/QnA/types';
+import useHeaderButton from '@/hooks/useHeaderButton';
 import * as S from '@/pages/QnA/QnA.styles';
 import CategoryTab from '@/components/CategoryTab';
 import QnACard from '@/pages/QnA/components/QnACard';
 import PopularQnA from '@/pages/QnA/components/PopularQnA';
+import PostIcon from '@/assets/icons/post.svg?react';
 import CheckedIcon from '@/assets/icons/checked.svg?react';
 import UncheckedIcon from '@/assets/icons/unchecked.svg?react';
 import ArrowIcon from '@/assets/icons/arrow.svg?react';
@@ -15,6 +18,19 @@ import {
 const QnA: React.FC = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number>(1);
   const [showCompleteOnly, setShowCompleteOnly] = useState<boolean>(false);
+
+  const navigate = useNavigate();
+
+  useHeaderButton(
+    <button
+      type="button"
+      onClick={() => {
+        navigate('/qna/post');
+      }}
+    >
+      <PostIcon />
+    </button>,
+  );
 
   const filteredQnA = useMemo((): QnAItem[] => {
     let filtered = QNA_MOCK_DATA.filter(

@@ -1,11 +1,19 @@
 import React from 'react';
+import useHeaderButton from '@/hooks/useHeaderButton';
 import * as S from '@/pages/Quiz/Quiz.styles';
 import Banner from '@/pages/Quiz/components/Banner';
 import QuizCategoryCard from '@/pages/Quiz/components/QuizCategoryCard';
+import BoxIcon from '@/assets/icons/box.svg?react';
 import { QUIZ_CATEGORIES } from '@/constants/categories';
 import { QUIZ_PROGRESS_MOCK_DATA } from '@/constants/mockData/quizData';
 
 const Quiz: React.FC = () => {
+  useHeaderButton(
+    <button type="button">
+      <BoxIcon />
+    </button>,
+  );
+
   return (
     <S.Container>
       <Banner />
