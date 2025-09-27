@@ -19,4 +19,12 @@ export const Container = styled.header`
 
 export const LogoButton = styled.button``;
 
+export const ButtonsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+  margin-right: 16px;
+`;
+
 export const MyButton = styled.button``;
