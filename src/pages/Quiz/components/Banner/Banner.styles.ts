@@ -7,24 +7,33 @@ export const BannerCard = styled.div`
   width: 100%;
   padding: 24px;
   margin-bottom: 16px;
-  background-image: linear-gradient(
-    315deg,
-    #559cff 0%,
-    ${(props) => props.theme.COLORS.MAIN.PRIMARY} 100%
-  );
   border-radius: 16px;
   color: white;
   cursor: pointer;
+  overflow: hidden;
+  position: relative;
 
   & svg {
     opacity: 0.7;
   }
 `;
 
+export const BackgroundImage = styled.img`
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: left top;
+  z-index: 0;
+`;
+
 export const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  z-index: 1;
 `;
 
 export const TextSection = styled.div`
