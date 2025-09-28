@@ -1,5 +1,6 @@
-import { atom } from 'jotai';
 import { ReactNode } from 'react';
+import { atom } from 'jotai';
 
-// eslint-disable-next-line import/prefer-default-export
 export const headerButtonAtom = atom<ReactNode>(null);
+
+export const subpageTitleAtom = atom<string>('');
