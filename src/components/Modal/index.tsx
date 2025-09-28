@@ -1,15 +1,13 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import useModal from '@/hooks/useModal';
-import useBodyScrollLock from '@/hooks/useBodyScrollLock';
+import { lockBodyScroll, unlockBodyScroll } from '@/utils/bodyScrollUtils';
 import * as S from '@/components/Modal/Modal.styles';
 import Button from '@/components/Button';
 import Loader from '@/components/Loader';
 
 const Modal: React.FC = () => {
   const { modal, closeModal } = useModal();
-  const { lockBodyScroll, unlockBodyScroll } = useBodyScrollLock();
-
   const handleClose = () => {
     modal?.onClose?.();
     closeModal();

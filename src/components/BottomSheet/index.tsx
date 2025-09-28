@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import useBottomSheet from '@/hooks/useBottomSheet';
-import useBodyScrollLock from '@/hooks/useBodyScrollLock';
+import { lockBodyScroll, unlockBodyScroll } from '@/utils/bodyScrollUtils';
 import * as S from '@/components/BottomSheet/BottomSheet.styles';
 
 const BottomSheet: React.FC = () => {
   const [isClosing, setIsClosing] = useState(false);
 
   const { bottomSheet, closeBottomSheet } = useBottomSheet();
-  const { lockBodyScroll, unlockBodyScroll } = useBodyScrollLock();
 
   const handleClose = () => {
     setIsClosing(true);
