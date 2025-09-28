@@ -29,7 +29,6 @@ export const Title = styled.h1`
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  font-family: Paperozi;
   font-weight: 600;
   font-size: 18px;
 `;
