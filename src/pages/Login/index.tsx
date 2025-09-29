@@ -25,12 +25,13 @@ const Login: React.FC = () => {
   return (
     <S.Container>
       <S.Content>
-        <S.Catchphrase>생활에서 생기는 모든 질문의 답</S.Catchphrase>
         <S.LogoWrapper>
           <LogoSVG />
         </S.LogoWrapper>
+        <S.GuideText>로그인하고 다양한 서비스를 이용해 보세요.</S.GuideText>
       </S.Content>
       <S.ButtonsWrapper>
+        <S.SpeechBubble>5초 만에 가입할 수 있어요!</S.SpeechBubble>
         {SOCIAL_LOGIN_OPTIONS.map(
           ({ id, icon: Icon, label, backgroundColor, color }) => (
             <S.SocialLoginButton
