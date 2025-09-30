@@ -58,8 +58,8 @@ export const Backdrop = styled.div<{ isClosing?: boolean }>`
 
 export const Container = styled.div<{ isClosing?: boolean }>`
   position: relative;
-  width: 80dvw;
-  max-width: 360px;
+  width: 85dvw;
+  max-width: 408px;
   background-color: white;
   border-radius: 16px;
   box-shadow:
@@ -75,34 +75,13 @@ export const ModalHeader = styled.div<{ hasTitle: boolean }>`
   align-items: center;
   justify-content: ${(props) =>
     props.hasTitle ? 'space-between' : 'flex-end'};
-  padding: 20px 16px 12px 24px;
+  padding: 20px 24px 16px 24px;
 `;
 
-export const ModalTitle = styled.h3`
+export const ModalTitle = styled.h1`
   flex: 1;
-  font-family: Paperozi;
   font-weight: 700;
-  padding-right: 40px;
-`;
-
-export const CloseButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  color: ${(props) => props.theme.COLORS.LABEL.TERTIARY};
-  text-align: center;
-  border-radius: 8px;
-
-  &:hover {
-    background-color: ${(props) => props.theme.COLORS.GRAY[6]};
-    color: ${(props) => props.theme.COLORS.LABEL.SECONDARY};
-  }
-
-  svg {
-    stroke: currentColor;
-  }
+  font-size: 16px;
 `;
 
 export const ModalContent = styled.div<{ hasHeader: boolean }>`
