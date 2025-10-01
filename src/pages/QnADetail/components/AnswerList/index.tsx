@@ -1,0 +1,47 @@
+import React from 'react';
+import type { Answer } from '@/pages/QnADetail/types';
+import * as S from '@/pages/QnADetail/components/AnswerList/AnswerList.styles';
+import * as CommonStyles from '@/pages/QnADetail/components/Common.styles';
+import ContentCard from '@/pages/QnADetail/components/ContentCard';
+
+interface AnswerListProps {
+  answers: Answer[];
+  onAnswerComments: (answerId: number) => void;
+  onAnswerFollowUp: (answerId: number) => void;
+}
+
+const AnswerList: React.FC<AnswerListProps> = ({
+  answers,
+  onAnswerComments,
+  onAnswerFollowUp,
+}) => {
+  return (
+    <S.AnswersSection>
+      {answers.length > 0 ? (
+        <>
+          <S.SectionTitle>답변 {answers.length}개</S.SectionTitle>
+          {answers.map((answer) => (
+            <ContentCard
+              key={answer.id}
+              data={answer}
+              type="answer"
+              onCommentsClick={() => onAnswerComments(answer.id)}
+              onFollowUpClick={() => onAnswerFollowUp(answer.id)}
+            />
+          ))}
+        </>
+      ) : (
+        <CommonStyles.EmptyState>
+          <CommonStyles.EmptyMessage>
+            아직 답변이 없습니다
+          </CommonStyles.EmptyMessage>
+          <CommonStyles.EmptySubMessage>
+            첫 번째 답변을 달아보세요!
+          </CommonStyles.EmptySubMessage>
+        </CommonStyles.EmptyState>
+      )}
+    </S.AnswersSection>
+  );
+};
+
+export default AnswerList;
