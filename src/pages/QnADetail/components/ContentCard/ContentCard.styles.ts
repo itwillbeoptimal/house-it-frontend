@@ -31,6 +31,44 @@ export const MenuButton = styled.button`
   align-items: center;
 `;
 
+export const MenuWrapper = styled.div`
+  position: relative;
+`;
+
+export const Dropdown = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 88px;
+  margin-top: 8px;
+  background-color: white;
+  border: 1px solid ${(props) => props.theme.COLORS.GRAY[2]};
+  border-radius: 8px;
+  z-index: 10;
+`;
+
+export const DropdownItem = styled.button`
+  width: 100%;
+  padding: 12px 16px;
+  text-align: center;
+
+  &:hover {
+    background: ${(props) => props.theme.COLORS.GRAY[1]};
+  }
+
+  &:first-child {
+    border-radius: 8px 8px 0 0;
+  }
+
+  &:last-child {
+    border-radius: 0 0 8px 8px;
+  }
+
+  &:only-child {
+    border-radius: 8px;
+  }
+`;
+
 export const ActionButton = styled.button`
   display: flex;
   align-items: center;

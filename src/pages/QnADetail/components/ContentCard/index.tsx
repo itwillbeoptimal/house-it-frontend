@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import type { QnADetail, Answer } from '@/pages/QnADetail/types';
 import { formatTimeAgo } from '@/utils/dateUtils';
@@ -16,6 +16,10 @@ interface ContentCardProps {
   type: 'question' | 'answer';
   onCommentsClick: () => void;
   onFollowUpClick?: () => void;
+  isAuthor?: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onReport?: () => void;
 }
 
 const ContentCard: React.FC<ContentCardProps> = ({
@@ -23,8 +27,14 @@ const ContentCard: React.FC<ContentCardProps> = ({
   type,
   onCommentsClick,
   onFollowUpClick,
+  isAuthor = true,
+  onEdit,
+  onDelete,
+  onReport,
 }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const isQuestion = type === 'question';
   const isAnswer = type === 'answer';
@@ -38,6 +48,41 @@ const ContentCard: React.FC<ContentCardProps> = ({
   const handleCloseImageViewer = () => {
     setSelectedImage(null);
   };
+
+  const handleMenuClick = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleEdit = () => {
+    setIsMenuOpen(false);
+    onEdit?.();
+  };
+
+  const handleDelete = () => {
+    setIsMenuOpen(false);
+    onDelete?.();
+  };
+
+  const handleReport = () => {
+    setIsMenuOpen(false);
+    onReport?.();
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   return (
     <>
@@ -63,9 +108,23 @@ const ContentCard: React.FC<ContentCardProps> = ({
               </CommonStyles.CreatedAt>
             </S.AuthorMeta>
           </S.AuthorInfo>
-          <S.MenuButton>
-            <MenuIcon />
-          </S.MenuButton>
+          <S.MenuWrapper ref={menuRef}>
+            <S.MenuButton onClick={handleMenuClick}>
+              <MenuIcon />
+            </S.MenuButton>
+            {isMenuOpen && (
+              <S.Dropdown>
+                {isAuthor ? (
+                  <>
+                    <S.DropdownItem onClick={handleEdit}>수정</S.DropdownItem>
+                    <S.DropdownItem onClick={handleDelete}>삭제</S.DropdownItem>
+                  </>
+                ) : (
+                  <S.DropdownItem onClick={handleReport}>신고</S.DropdownItem>
+                )}
+              </S.Dropdown>
+            )}
+          </S.MenuWrapper>
         </S.Header>
         {isQuestion && <S.Title>{questionData.title}</S.Title>}
         <S.Content>{data.content}</S.Content>
