@@ -5,8 +5,7 @@ export const Container = styled.section``;
 export const SectionTitle = styled.h2`
   padding: 0 20px;
   margin-bottom: 16px;
-  font-family: Paperozi;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 18px;
 `;
 
