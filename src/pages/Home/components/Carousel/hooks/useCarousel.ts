@@ -186,6 +186,18 @@ const useCarousel = ({
     };
   }, [resetAutoPlay]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      moveToSlide(currentIndex, false);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [currentIndex, moveToSlide]);
+
   return {
     currentIndex,
     isDragging,
