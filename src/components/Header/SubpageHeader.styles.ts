@@ -29,6 +29,6 @@ export const Title = styled.h1`
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 18px;
 `;
