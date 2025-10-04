@@ -2,6 +2,7 @@ import React from 'react';
 import type { MagazineItem } from '@/pages/Magazine/types';
 import { formatDate } from '@/utils/dateUtils';
 import * as S from '@/pages/Magazine/components/MagazineCard/MagazineCard.styles';
+import DefaultProfileImage from '@/assets/images/default-profile.png';
 
 interface MagazineCardProps extends MagazineItem {
   imageAlt?: string;
@@ -28,11 +29,10 @@ const MagazineCard: React.FC<MagazineCardProps> = ({
       <S.ContentWrapper>
         <S.AuthorInfo>
           <S.ProfileWrapper>
-            {authorProfileUrl ? (
-              <S.ProfileImage src={authorProfileUrl} alt={`${author} 프로필`} />
-            ) : (
-              <S.DefaultProfile />
-            )}
+            <S.ProfileImage
+              src={authorProfileUrl || DefaultProfileImage}
+              alt={`${author} 프로필`}
+            />
           </S.ProfileWrapper>
           <S.AuthorMeta>
             <S.AuthorName>{author}</S.AuthorName>

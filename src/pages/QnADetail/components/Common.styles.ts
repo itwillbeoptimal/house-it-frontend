@@ -14,13 +14,6 @@ export const ProfileImage = styled.img`
   object-fit: cover;
 `;
 
-export const DefaultProfile = styled.div`
-  width: 100%;
-  height: 100%;
-  background-color: ${(props) => props.theme.COLORS.GRAY[3]};
-  border-radius: 50%;
-`;
-
 export const AuthorName = styled.span`
   font-weight: 500;
   font-size: 14px;

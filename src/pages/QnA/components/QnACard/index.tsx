@@ -4,6 +4,7 @@ import { formatTimeAgo } from '@/utils/dateUtils';
 import { QNA_CATEGORIES } from '@/constants/categories';
 import * as S from '@/pages/QnA/components/QnACard/QnACard.styles';
 import { useNavigate } from 'react-router-dom';
+import DefaultProfileImage from '@/assets/images/default-profile.png';
 
 interface QnACardProps extends QnAItem {
   showCategoryBadge?: boolean;
@@ -43,11 +44,10 @@ const QnACard: React.FC<QnACardProps> = ({
       )}
       <S.AuthorInfo>
         <S.ProfileWrapper>
-          {authorProfileUrl ? (
-            <S.ProfileImage src={authorProfileUrl} alt={`${author} 프로필`} />
-          ) : (
-            <S.DefaultProfile />
-          )}
+          <S.ProfileImage
+            src={authorProfileUrl || DefaultProfileImage}
+            alt={`${author} 프로필`}
+          />
         </S.ProfileWrapper>
         <S.AuthorMeta>
           <S.AuthorName>{author}</S.AuthorName>
