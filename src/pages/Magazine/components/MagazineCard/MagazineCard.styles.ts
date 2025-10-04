@@ -3,15 +3,22 @@ import styled from '@emotion/styled';
 export const Container = styled.article`
   display: flex;
   flex-direction: column;
-  margin-top: 20px;
+  padding: 16px 0;
   overflow: hidden;
   cursor: pointer;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid ${(props) => props.theme.COLORS.GRAY[2]};
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+  }
 `;
 
 export const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 0 8px;
 `;
 
 export const AuthorInfo = styled.div`
@@ -50,7 +57,7 @@ export const CreatedAt = styled.span`
 `;
 
 export const Title = styled.h2`
-  font-size: 21px;
+  font-size: 18px;
   font-weight: 600;
   margin-bottom: 4px;
 `;

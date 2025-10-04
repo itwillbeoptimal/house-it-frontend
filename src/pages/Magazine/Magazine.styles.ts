@@ -24,7 +24,6 @@ export const ContentArea = styled.div`
 export const MagazineGrid = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
 `;
 
 export const EmptyState = styled.div`
