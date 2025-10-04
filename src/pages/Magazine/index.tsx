@@ -4,12 +4,23 @@ import * as S from '@/pages/Magazine/Magazine.styles';
 import CategoryTab from '@/components/CategoryTab';
 import MagazineCard from '@/pages/Magazine/components/MagazineCard';
 import { TabWrapper } from '@/pages/Magazine/Magazine.styles';
+import { MAGAZINE_MOCK_DATA } from '@/constants/mockData/magazineData';
 
 const Magazine: React.FC = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number>(1);
 
+  const filterMagazinesByCategory = (
+    magazines: MagazineItem[],
+    categoryId?: number,
+  ): MagazineItem[] => {
+    if (!categoryId) {
+      return magazines;
+    }
+    return magazines.filter((magazine) => magazine.categoryId === categoryId);
+  };
+
   const filteredMagazines = useMemo((): MagazineItem[] => {
-    return [];
+    return filterMagazinesByCategory(MAGAZINE_MOCK_DATA, selectedCategoryId);
   }, [selectedCategoryId]);
 
   const handleFilterChange = (categoryId: number) => {
