@@ -3,12 +3,12 @@ import styled from '@emotion/styled';
 export const Container = styled.div`
   position: relative;
   width: 100%;
-  padding: 0 20px;
   overflow: hidden;
 `;
 
 export const CarouselTrack = styled.div`
   display: flex;
+  gap: 20px;
   user-select: none;
   cursor: grab;
 
@@ -19,13 +19,11 @@ export const CarouselTrack = styled.div`
 
 export const Slide = styled.div<{ active: boolean }>`
   flex-shrink: 0;
-  width: calc(100% - 24px);
-  aspect-ratio: 4/3;
+  width: calc(100% - 40px);
+  aspect-ratio: 16/9;
   background-color: ${(props) => props.theme.COLORS.GRAY[2]};
   border-radius: 16px;
   overflow: hidden;
-  transform: scale(${(props) => (props.active ? 1 : 0.95)});
-  transition: all 0.3s ease;
 `;
 
 export const SlideImage = styled.img`

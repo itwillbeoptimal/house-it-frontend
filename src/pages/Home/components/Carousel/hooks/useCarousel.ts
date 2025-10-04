@@ -27,8 +27,10 @@ const useCarousel = ({
 
   const moveToSlide = useCallback(
     (index: number, withTransition = true) => {
+      const GAP = 20;
+      const OFFSET = 20;
       const slideWidth = getSlideWidth();
-      const newOffset = -(index * slideWidth) + 12;
+      const newOffset = -(index * (slideWidth + GAP)) + OFFSET;
 
       if (trackRef.current) {
         trackRef.current.style.transition = withTransition
