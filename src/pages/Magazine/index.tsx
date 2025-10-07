@@ -3,7 +3,6 @@ import type { MagazineItem } from '@/pages/Magazine/types';
 import * as S from '@/pages/Magazine/Magazine.styles';
 import CategoryTab from '@/components/CategoryTab';
 import MagazineCard from '@/pages/Magazine/components/MagazineCard';
-import { TabWrapper } from '@/pages/Magazine/Magazine.styles';
 import { MAGAZINE_MOCK_DATA } from '@/constants/mockData/magazineData';
 
 const Magazine: React.FC = () => {
@@ -29,9 +28,9 @@ const Magazine: React.FC = () => {
 
   return (
     <S.Container>
-      <TabWrapper>
+      <S.TabWrapper>
         <CategoryTab activeTab="magazine" onFilterChange={handleFilterChange} />
-      </TabWrapper>
+      </S.TabWrapper>
       <S.ContentArea>
         {filteredMagazines.length > 0 ? (
           <S.MagazineGrid>
