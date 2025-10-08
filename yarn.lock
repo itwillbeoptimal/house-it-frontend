@@ -2768,6 +2768,43 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:5.90.2":
+  version: 5.90.2
+  resolution: "@tanstack/query-core@npm:5.90.2"
+  checksum: ccee5dacfa717ff7cf54d3b1017f9923e160efa8acc52a9af8d1f15e428cb7da95dce2c2cca135fd029ab5837e0b821c599610a32e1671d9da3f76f5c10721e8
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-devtools@npm:5.90.1":
+  version: 5.90.1
+  resolution: "@tanstack/query-devtools@npm:5.90.1"
+  checksum: 2c17d0c46f11b4839e5112c15ef925385899defca649a32fbb1a6bd093055b7102584f800615a372bead72875d7ec61b5d782c8fd1971f0e1b3655ff3c448641
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query-devtools@npm:^5.90.2":
+  version: 5.90.2
+  resolution: "@tanstack/react-query-devtools@npm:5.90.2"
+  dependencies:
+    "@tanstack/query-devtools": 5.90.1
+  peerDependencies:
+    "@tanstack/react-query": ^5.90.2
+    react: ^18 || ^19
+  checksum: e4133b3964b21ed74701e4568c0abd67001dfaa8b46d718d1404c4de36535df0b9269caad464ce455ed980bdbf364c15d67ec5040816dd24db5dbb83550b78b0
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.90.2":
+  version: 5.90.2
+  resolution: "@tanstack/react-query@npm:5.90.2"
+  dependencies:
+    "@tanstack/query-core": 5.90.2
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: da201f43bad8a8b309dea04437d565339c40fb7a384613ccc7392b6869463c35fb1ab1bed130dd15b2c270a629ff4ed97f305f9d3e47b68c7e00d9f336b9e641
+  languageName: node
+  linkType: hard
+
 "@tybys/wasm-util@npm:^0.10.0":
   version: 0.10.1
   resolution: "@tybys/wasm-util@npm:0.10.1"
@@ -3465,7 +3502,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.8.3":
+"axios@npm:^1.12.2, axios@npm:^1.8.3":
   version: 1.12.2
   resolution: "axios@npm:1.12.2"
   dependencies:
@@ -5450,11 +5487,14 @@ __metadata:
     "@emotion/react": ^11.14.0
     "@emotion/styled": ^11.14.1
     "@eslint/js": ^9.18.0
+    "@tanstack/react-query": ^5.90.2
+    "@tanstack/react-query-devtools": ^5.90.2
     "@types/node": ^24.3.1
     "@types/react": ^19.0.8
     "@types/react-dom": ^19.0.3
     "@vite-pwa/assets-generator": ^0.2.6
     "@vitejs/plugin-react": ^4.2.1
+    axios: ^1.12.2
     eslint: 8.57.0
     eslint-config-airbnb: ^19.0.4
     eslint-config-airbnb-typescript: ^18.0.0
