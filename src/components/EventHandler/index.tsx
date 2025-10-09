@@ -21,6 +21,7 @@ const EventHandler = () => {
       const data = args[0] as {
         title: string;
         content: React.ReactNode;
+        onConfirm?: () => void;
         confirmText?: string;
       };
       alert(data);
