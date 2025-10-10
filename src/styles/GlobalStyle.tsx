@@ -150,6 +150,7 @@ const globalStyles = css`
     font-family: inherit;
     font-size: inherit;
     letter-spacing: inherit;
+    -webkit-tap-highlight-color: transparent;
   }
 
   #root {
