@@ -1,24 +1,6 @@
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
 
-const slideUp = keyframes`
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-`;
-
-const slideDown = keyframes`
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(100%);
-  }
-`;
-
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -50,7 +32,12 @@ export const Backdrop = styled.div<{ isClosing?: boolean }>`
   animation: ${(props) => (props.isClosing ? fadeOut : fadeIn)} 0.3s ease;
 `;
 
-export const Container = styled.div<{ isClosing?: boolean }>`
+export const Container = styled.div<{
+  isClosing?: boolean;
+  isMounted?: boolean;
+  isDragging?: boolean;
+  dragOffset?: number;
+}>`
   position: fixed;
   display: flex;
   flex: 1;
@@ -62,22 +49,39 @@ export const Container = styled.div<{ isClosing?: boolean }>`
   padding-bottom: env(safe-area-inset-bottom);
   background-color: white;
   border-radius: 20px 20px 0 0;
-  animation: ${(props) => (props.isClosing ? slideDown : slideUp)} 0.3s ease;
   z-index: 100;
+  transform: translateY(
+    ${({ isDragging, dragOffset, isMounted }) => {
+      if (isDragging) return `${dragOffset}px`;
+      return isMounted ? '0' : '100%';
+    }}
+  );
+  transition: ${(props) => (props.isDragging ? 'none' : 'transform 0.3s ease')};
+
+  ${(props) =>
+    props.isClosing &&
+    `
+    transform: translateY(100%);
+  `}
 `;
 
 export const DragHandle = styled.div`
-  width: 40px;
-  height: 4px;
-  background-color: ${(props) => props.theme.COLORS.GRAY[3]};
-  border-radius: 2px;
-  margin: 12px auto 8px auto;
-  cursor: grab;
   flex-shrink: 0;
+  padding: 12px 16px;
+  margin: 0 auto;
+  cursor: grab;
+  touch-action: none;
 
   &:active {
     cursor: grabbing;
   }
+`;
+
+export const DragBar = styled.div`
+  width: 40px;
+  height: 4px;
+  background-color: ${(props) => props.theme.COLORS.GRAY[3]};
+  border-radius: 2px;
 `;
 
 export const Header = styled.div`
@@ -98,10 +102,10 @@ export const SheetContent = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
+  min-height: 0;
   padding: 0 20px;
   overflow-x: hidden;
   overflow-y: auto;
-  min-height: 0;
 
   &::-webkit-scrollbar {
     display: none;
