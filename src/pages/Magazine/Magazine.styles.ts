@@ -4,8 +4,6 @@ export const Container = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-  width: 100%;
-  height: 100dvh;
   padding: 0 20px 20px 20px;
 `;
 
@@ -18,7 +16,6 @@ export const ContentArea = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-  overflow-y: auto;
 `;
 
 export const MagazineGrid = styled.div`
