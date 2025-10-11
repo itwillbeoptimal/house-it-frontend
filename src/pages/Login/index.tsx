@@ -1,27 +1,28 @@
 import React from 'react';
+import type { Provider } from '@/pages/Login/types/Provider';
 import * as S from '@/pages/Login/Login.styles';
 import LogoSVG from '@/assets/logo.svg?react';
-import KakaoIcon from '@/assets/icons/kakao.svg?react';
-import NaverIcon from '@/assets/icons/naver.svg?react';
-
-const SOCIAL_LOGIN_OPTIONS = [
-  {
-    id: 'kakao',
-    icon: KakaoIcon,
-    label: '카카오 로그인',
-    backgroundColor: '#fee500',
-    color: 'rgba(0, 0, 0, 0.85)',
-  },
-  {
-    id: 'naver',
-    icon: NaverIcon,
-    label: '네이버 로그인',
-    backgroundColor: '#03c75a',
-    color: 'white',
-  },
-];
+import { SOCIAL_LOGIN_OPTIONS } from '@/pages/Login/constants';
 
 const Login: React.FC = () => {
+  const handleLoginClick = (provider: Provider) => {
+    let returnTo = new URLSearchParams(window.location.search).get('returnTo');
+
+    if (!returnTo) {
+      const { referrer } = document;
+      const currentOrigin = window.location.origin;
+
+      if (referrer && referrer.startsWith(currentOrigin)) {
+        const referrerUrl = new URL(referrer);
+        returnTo = referrerUrl.pathname + referrerUrl.search;
+      } else {
+        returnTo = '/';
+      }
+    }
+
+    window.location.href = `${import.meta.env.VITE_SERVER_URL}/oauth2/authorization/${provider}?returnTo=${encodeURIComponent(returnTo)}`;
+  };
+
   return (
     <S.Container>
       <S.Content>
@@ -33,11 +34,12 @@ const Login: React.FC = () => {
       <S.ButtonsWrapper>
         <S.SpeechBubble>5초 만에 가입할 수 있어요!</S.SpeechBubble>
         {SOCIAL_LOGIN_OPTIONS.map(
-          ({ id, icon: Icon, label, backgroundColor, color }) => (
+          ({ provider, icon: Icon, label, backgroundColor, color }) => (
             <S.SocialLoginButton
-              key={id}
+              key={provider}
               backgroundColor={backgroundColor}
               color={color}
+              onClick={() => handleLoginClick(provider)}
             >
               <Icon />
               {label}
