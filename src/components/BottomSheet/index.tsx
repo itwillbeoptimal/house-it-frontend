@@ -155,6 +155,7 @@ const BottomSheet: React.FC = () => {
         isMounted={isMounted}
         isDragging={isDragging}
         dragOffset={dragOffset}
+        hasMaxHeight={bottomSheet?.hasMaxHeight}
         onClick={(e) => e.stopPropagation()}
       >
         <S.DragHandle

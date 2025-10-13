@@ -37,6 +37,7 @@ export const Container = styled.div<{
   isMounted?: boolean;
   isDragging?: boolean;
   dragOffset?: number;
+  hasMaxHeight?: boolean;
 }>`
   position: fixed;
   display: flex;
@@ -45,7 +46,7 @@ export const Container = styled.div<{
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 80dvh;
+  max-height: 80dvh;
   padding-bottom: env(safe-area-inset-bottom);
   background-color: white;
   border-radius: 20px 20px 0 0;
@@ -57,6 +58,12 @@ export const Container = styled.div<{
     }}
   );
   transition: ${(props) => (props.isDragging ? 'none' : 'transform 0.3s ease')};
+
+  ${(props) =>
+    props.hasMaxHeight &&
+    `
+    height: 80dvh;
+  `}
 
   ${(props) =>
     props.isClosing &&

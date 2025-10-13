@@ -8,6 +8,7 @@ export interface BottomSheetState {
   content?: React.ReactNode;
   onClose?: () => void;
   disableBackdropClick?: boolean;
+  hasMaxHeight?: boolean;
 }
 
 export const bottomSheetAtom = atom<BottomSheetState | null>(null);
