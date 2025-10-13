@@ -97,6 +97,7 @@ export const Title = styled.h1`
 `;
 
 export const Content = styled.div`
+  font-size: 15px;
   line-height: 1.6;
   white-space: pre-wrap;
 `;
