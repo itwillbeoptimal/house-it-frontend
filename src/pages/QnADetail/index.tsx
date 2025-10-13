@@ -43,6 +43,7 @@ const QnADetail: React.FC = () => {
           comments={comments}
         />
       ),
+      hasMaxHeight: true,
     });
   };
 
@@ -58,6 +59,7 @@ const QnADetail: React.FC = () => {
           comments={comments}
         />
       ),
+      hasMaxHeight: true,
     });
   };
 
