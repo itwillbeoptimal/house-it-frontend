@@ -49,20 +49,23 @@ export const AuthorMeta = styled.div`
 
 export const AuthorName = styled.span`
   font-weight: 500;
-`;
-
-export const CreatedAt = styled.span`
-  font-size: 10px;
-  color: ${(props) => props.theme.COLORS.LABEL.TERTIARY};
-`;
-
-export const Title = styled.h2`
-  font-size: 18px;
-  font-weight: 600;
+  line-height: 1;
   margin-bottom: 4px;
 `;
 
-export const Subtitle = styled.p`
+export const CreatedAt = styled.span`
+  color: ${(props) => props.theme.COLORS.LABEL.TERTIARY};
+  font-size: 10px;
+  line-height: 1;
+`;
+
+export const Title = styled.h1`
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 2px;
+`;
+
+export const Subtitle = styled.h2`
   font-size: 14px;
   font-weight: 400;
   color: ${(props) => props.theme.COLORS.LABEL.SECONDARY};
