@@ -35,13 +35,19 @@ const Carousel: React.FC<CarouselProps> = ({ items, onSlideClick }) => {
   );
 
   const handleTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
-    const pos = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    startDragging(pos);
+    const posX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const posY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    startDragging(posX, posY);
   };
 
   const handleTouchMove = (e: React.TouchEvent | React.MouseEvent) => {
-    const currentPos = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    moveDragging(currentPos);
+    const posX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const posY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    const shouldPreventDefault = moveDragging(posX, posY);
+
+    if (shouldPreventDefault && 'touches' in e) {
+      e.preventDefault();
+    }
   };
 
   const handleTouchEnd = () => {

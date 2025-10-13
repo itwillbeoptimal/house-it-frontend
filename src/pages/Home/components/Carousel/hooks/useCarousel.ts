@@ -3,17 +3,20 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 interface UseCarouselProps {
   itemsLength: number;
   autoPlayInterval?: number;
+  gap?: number;
 }
 
 const useCarousel = ({
   itemsLength,
   autoPlayInterval = 10000,
+  gap = 20,
 }: UseCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [startPos, setStartPos] = useState(0);
   const [currentTranslate, setCurrentTranslate] = useState(0);
   const [prevTranslate, setPrevTranslate] = useState(0);
+  const [startY, setStartY] = useState(0);
 
   const trackRef = useRef<HTMLDivElement>(null);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
@@ -27,10 +30,10 @@ const useCarousel = ({
 
   const moveToSlide = useCallback(
     (index: number, withTransition = true) => {
-      const GAP = 20;
-      const OFFSET = 20;
       const slideWidth = getSlideWidth();
-      const newOffset = -(index * (slideWidth + GAP)) + OFFSET;
+      const containerWidth = trackRef.current?.parentElement?.offsetWidth || 0;
+      const centerOffset = (containerWidth - slideWidth) / 2;
+      const newOffset = -(index * (slideWidth + gap)) + centerOffset;
 
       if (trackRef.current) {
         trackRef.current.style.transition = withTransition
@@ -42,7 +45,7 @@ const useCarousel = ({
       setCurrentTranslate(newOffset);
       setPrevTranslate(newOffset);
     },
-    [getSlideWidth],
+    [getSlideWidth, gap],
   );
 
   const resetSlideTransitions = useCallback(() => {
@@ -117,9 +120,10 @@ const useCarousel = ({
   );
 
   const startDragging = useCallback(
-    (position: number) => {
+    (positionX: number, positionY: number) => {
       setIsDragging(true);
-      setStartPos(position);
+      setStartPos(positionX);
+      setStartY(positionY);
       setPrevTranslate(currentTranslate);
 
       if (autoPlayRef.current) {
@@ -134,10 +138,17 @@ const useCarousel = ({
   );
 
   const moveDragging = useCallback(
-    (position: number) => {
-      if (!isDragging) return;
+    (positionX: number, positionY: number) => {
+      if (!isDragging) return false;
 
-      const diff = position - startPos;
+      const diffX = Math.abs(positionX - startPos);
+      const diffY = Math.abs(positionY - startY);
+
+      if (diffY > diffX) {
+        return false;
+      }
+
+      const diff = positionX - startPos;
       const newTranslate = prevTranslate + diff;
 
       setCurrentTranslate(newTranslate);
@@ -145,8 +156,10 @@ const useCarousel = ({
       if (trackRef.current) {
         trackRef.current.style.transform = `translateX(${newTranslate}px)`;
       }
+
+      return true;
     },
-    [isDragging, startPos, prevTranslate],
+    [isDragging, startPos, startY, prevTranslate],
   );
 
   const endDragging = useCallback(() => {
