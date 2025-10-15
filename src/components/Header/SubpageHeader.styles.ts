@@ -9,7 +9,7 @@ export const Container = styled.header`
   left: 0;
   right: 0;
   width: 100%;
-  max-width: 768px;
+  max-width: 480px;
   height: 72px;
   padding: 20px;
   margin: 0 auto;

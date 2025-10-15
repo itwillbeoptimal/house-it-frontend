@@ -23,7 +23,7 @@ export const Footer = styled.footer`
   left: 0;
   right: 0;
   width: 100%;
-  max-width: 768px;
+  max-width: 480px;
   padding-bottom: env(safe-area-inset-bottom);
   margin: 0 auto;
   background-color: white;

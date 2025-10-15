@@ -155,7 +155,7 @@ const globalStyles = css`
 
   #root {
     width: 100%;
-    max-width: 768px;
+    max-width: 480px;
     min-height: 100dvh;
     margin: 0 auto;
     background: ${theme.COLORS.BACKGROUND};

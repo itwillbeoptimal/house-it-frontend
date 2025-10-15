@@ -5,7 +5,7 @@ export const Backdrop = styled.div`
   top: 0;
   left: 50%;
   width: 100%;
-  max-width: 768px;
+  max-width: 480px;
   height: 100dvh;
   background-color: rgba(0, 0, 0, 0.7);
   z-index: 10;
