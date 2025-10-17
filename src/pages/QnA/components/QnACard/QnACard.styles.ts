@@ -15,13 +15,14 @@ export const Container = styled.article<{ isPopular?: boolean }>`
 export const CategoryBadge = styled.span`
   display: inline-block;
   width: fit-content;
-  padding: 4px 8px;
+  padding: 3px 6px;
   margin-bottom: 8px;
   background-color: ${(props) => props.theme.COLORS.MAIN.TERTIARY};
-  border-radius: 4px;
+  border-radius: 12px;
   color: ${(props) => props.theme.COLORS.MAIN.PRIMARY};
+  font-weight: 700;
   font-size: 10px;
-  font-weight: 500;
+  letter-spacing: -0.04rem;
 `;
 
 export const AuthorInfo = styled.div`
@@ -100,7 +101,7 @@ export const AnswerBadge = styled.span<{ isAnswered: boolean }>`
     props.isAnswered
       ? props.theme.COLORS.MAIN.PRIMARY
       : props.theme.COLORS.GRAY[2]};
-  border-radius: 4px;
+  border-radius: 6px;
   color: ${(props) =>
     props.isAnswered ? 'white' : props.theme.COLORS.LABEL.SECONDARY};
   font-size: 10px;
