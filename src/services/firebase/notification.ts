@@ -2,17 +2,16 @@ import { getToken } from 'firebase/messaging';
 import { messaging } from '@/services/firebase';
 import eventManager from '@/utils/eventManager';
 
-export const getDeviceToken = async (): Promise<string | null> => {
+export const getFcmToken = async (): Promise<string | null> => {
   try {
     const currentToken = await getToken(messaging, {
       vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
     });
-
     return currentToken || null;
   } catch {
     eventManager.emit('alert', {
       title: '디바이스 토큰 오류',
-      content: '토큰을 가져오는 중 오류가 발생했습니다.',
+      content: '디바이스 토큰을 가져오는 중 오류가 발생했습니다.',
     });
     return null;
   }
