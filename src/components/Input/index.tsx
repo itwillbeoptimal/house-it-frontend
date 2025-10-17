@@ -1,18 +1,24 @@
 import React from 'react';
 import styled from '@emotion/styled';
 
-const StyledInput = styled.input<{ hasToggle?: boolean }>`
+const StyledInput = styled.input<{ hasToggle?: boolean; hasError?: boolean }>`
   width: 100%;
   padding: 12px;
   background-color: white;
-  border: 1px solid ${(props) => props.theme.COLORS.GRAY[2]};
+  border: 1px solid
+    ${(props) =>
+      props.hasError
+        ? props.theme.COLORS.LABEL.ALERT
+        : props.theme.COLORS.GRAY[2]};
   border-radius: 8px;
-
   transition: all 0.2s ease;
 
   &:focus {
     outline: none;
-    border-color: ${(props) => props.theme.COLORS.MAIN.PRIMARY};
+    border-color: ${(props) =>
+      props.hasError
+        ? props.theme.COLORS.LABEL.ALERT
+        : props.theme.COLORS.MAIN.PRIMARY};
     background-color: white;
   }
 
@@ -27,10 +33,12 @@ const StyledInput = styled.input<{ hasToggle?: boolean }>`
   }
 `;
 
-const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({
-  ...rest
-}) => {
-  return <StyledInput {...rest} />;
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  hasError?: boolean;
+}
+
+const Input: React.FC<InputProps> = ({ hasError, ...rest }) => {
+  return <StyledInput hasError={hasError} {...rest} />;
 };
 
 export default Input;
