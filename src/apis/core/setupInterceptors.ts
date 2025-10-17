@@ -39,12 +39,12 @@ const setupInterceptors = (instance: AxiosInstance) => {
     async (error: AxiosError) => {
       const originalRequest = error.config;
       const responseData = error.response?.data as {
-        errorCodeResponse?: string;
+        errorCode?: string;
       };
 
-      const errorCode = responseData?.errorCodeResponse;
+      const errorCode = responseData?.errorCode;
 
-      if (errorCode === 'INVALID_TOKEN' || errorCode === 'EXPIRED_TOKEN') {
+      if (errorCode === 'AUTH_ERR_002' || errorCode === 'AUTH_ERR_003') {
         try {
           const refreshToken = localStorage.getItem('refreshToken');
           const refreshResponse = await instance.post('/api/auth/refresh', {
@@ -67,10 +67,7 @@ const setupInterceptors = (instance: AxiosInstance) => {
         }
       }
 
-      if (
-        errorCode === 'INVALID_REFRESH_TOKEN' ||
-        errorCode === 'EXPIRED_REFRESH_TOKEN'
-      ) {
+      if (errorCode === 'AUTH_ERR_013' || errorCode === 'AUTH_ERR_014') {
         removeTokens();
         showAlert();
       }
