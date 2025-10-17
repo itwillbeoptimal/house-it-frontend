@@ -4,12 +4,14 @@ import type {
   NicknameCheckResponse,
   UpdateUserInfoRequest,
   UpdateUserInfoResponse,
+  UpdateFcmTokenRequest,
 } from '@/apis/user/types';
 import apiClient from '@/apis/core/apiClient';
 
 export const fetchUserInfo = async (): Promise<UserInfoResponse> => {
   const response =
     await apiClient.get<APIResponse<UserInfoResponse>>('/api/user/info');
+
   return response.data.result;
 };
 
@@ -20,6 +22,7 @@ export const isAvailableNickname = async (
     '/api/user/check-nickname',
     { params: { nickname } },
   );
+
   return response.data.result;
 };
 
@@ -31,7 +34,6 @@ export const updateUserInfo = async (
   if (data.nickname !== undefined) {
     formData.append('nickname', data.nickname);
   }
-
   if (data.image) {
     formData.append('image', data.image);
   }
@@ -49,4 +51,8 @@ export const updateUserInfo = async (
   );
 
   return response.data.result;
+};
+
+export const updateFcmToken = async (data: UpdateFcmTokenRequest) => {
+  await apiClient.post('/api/user/device', data);
 };

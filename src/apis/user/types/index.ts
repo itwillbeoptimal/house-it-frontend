@@ -18,3 +18,7 @@ export interface UpdateUserInfoResponse {
   nickName: string;
   profile: string;
 }
+
+export interface UpdateFcmTokenRequest {
+  fcmToken: string;
+}
