@@ -25,17 +25,18 @@ export const QuestionHeader = styled.div`
   margin-bottom: 6px;
 `;
 
-export const AIBadge = styled.span`
+export const AIBadge = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 6px;
+  padding: 2px 8px;
   margin-right: -4px;
-  background: linear-gradient(135deg, #b721ff 0%, #21d4fd 100%);
+  background: linear-gradient(135deg, #2575fc, #6a11cb);
   border-radius: 12px;
   color: white;
+  font-family: Paperozi;
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 700;
 `;
 
 export const QuestionText = styled.div`

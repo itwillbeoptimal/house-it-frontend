@@ -15,6 +15,9 @@ export const ProfileImage = styled.img`
 `;
 
 export const AuthorName = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 500;
   font-size: 14px;
 `;
