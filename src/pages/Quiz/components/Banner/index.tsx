@@ -1,10 +1,15 @@
+import React from 'react';
 import * as S from '@/pages/Quiz/components/Banner/Banner.styles';
 import BackgroundImage from '@/assets/images/banner-background.webp';
 import QuizIcon from '@/assets/icons/quiz.svg?react';
 
-const Banner = () => {
+interface BannerProps {
+  onClick?: () => void;
+}
+
+const Banner: React.FC<BannerProps> = ({ onClick }) => {
   return (
-    <S.BannerCard>
+    <S.BannerCard onClick={onClick}>
       <S.BackgroundImage src={BackgroundImage} alt="오늘의 퀴즈" />
       <S.Content>
         <S.TextSection>
