@@ -24,9 +24,9 @@ export const openModalAtom = atom(
   },
 );
 
-export const closeModalAtom = atom(null, (get, set) => {
+export const closeModalAtom = atom(null, (get, set, targetId?: string) => {
   const currentModal = get(modalAtom);
-  if (currentModal) {
+  if (currentModal && (!targetId || currentModal.id === targetId)) {
     set(modalAtom, { ...currentModal, isOpen: false });
     setTimeout(() => {
       set(modalAtom, null);

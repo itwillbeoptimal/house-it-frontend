@@ -16,8 +16,8 @@ const useModal = () => {
     setOpenModal(modalConfig);
   };
 
-  const closeModal = () => {
-    setCloseModal();
+  const closeModal = (targetId?: string) => {
+    setCloseModal(targetId);
   };
 
   const confirm = (config: {
