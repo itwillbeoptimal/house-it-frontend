@@ -19,7 +19,9 @@ export const getFcmToken = async (): Promise<string | null> => {
 
 export const registerServiceWorker = async (): Promise<void> => {
   try {
-    await navigator.serviceWorker.register('firebase-messaging-sw.js');
+    await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+      scope: '/',
+    });
   } catch {
     eventManager.emit('alert', {
       title: '서비스 워커 등록 실패',
