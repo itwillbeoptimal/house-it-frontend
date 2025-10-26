@@ -388,8 +388,6 @@ const CommentsContentWrapper: React.FC<{
 
   return (
     <CommentsContent
-      targetId={targetId}
-      targetType={targetType === 'QUESTION' ? 'question' : 'answer'}
       comments={comments}
       onCommentSubmit={handleCommentSubmit}
       onCommentDelete={handleCommentDelete}

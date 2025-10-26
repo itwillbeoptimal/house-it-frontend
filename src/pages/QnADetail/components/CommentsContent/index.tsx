@@ -12,8 +12,6 @@ const CommentsList = styled.div`
 `;
 
 interface CommentsContentProps {
-  targetId: number;
-  targetType: 'question' | 'answer';
   comments: Comment[];
   onCommentSubmit: (content: string) => void;
   onCommentDelete: (commentId: number) => void;
