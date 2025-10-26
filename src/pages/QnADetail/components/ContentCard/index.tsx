@@ -16,10 +16,10 @@ interface ContentCardProps {
   type: 'question' | 'answer';
   onCommentsClick: () => void;
   onFollowUpClick?: () => void;
-  isAuthor?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
   onReport?: () => void;
+  onAdopt?: () => void;
 }
 
 const ContentCard: React.FC<ContentCardProps> = ({
@@ -27,10 +27,10 @@ const ContentCard: React.FC<ContentCardProps> = ({
   type,
   onCommentsClick,
   onFollowUpClick,
-  isAuthor = true,
   onEdit,
   onDelete,
   onReport,
+  onAdopt,
 }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -40,6 +40,10 @@ const ContentCard: React.FC<ContentCardProps> = ({
   const isAnswer = type === 'answer';
   const answerData = data as Answer;
   const questionData = data as QnADetail;
+
+  const canModify = isQuestion ? questionData.canModify : answerData.canModify;
+  const canDelete = isQuestion ? questionData.canDelete : answerData.canDelete;
+  const canAdopt = isAnswer ? answerData.canAdopt : false;
 
   const handleImageClick = (imageUrl: string) => {
     setSelectedImage(imageUrl);
@@ -68,6 +72,11 @@ const ContentCard: React.FC<ContentCardProps> = ({
     onReport?.();
   };
 
+  const handleAdopt = () => {
+    setIsMenuOpen(false);
+    onAdopt?.();
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -83,6 +92,8 @@ const ContentCard: React.FC<ContentCardProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isMenuOpen]);
+
+  const showMenu = canModify || canDelete || !canModify;
 
   return (
     <>
@@ -108,23 +119,29 @@ const ContentCard: React.FC<ContentCardProps> = ({
               </CommonStyles.CreatedAt>
             </S.AuthorMeta>
           </S.AuthorInfo>
-          <S.MenuWrapper ref={menuRef}>
-            <S.MenuButton onClick={handleMenuClick}>
-              <MenuIcon />
-            </S.MenuButton>
-            {isMenuOpen && (
-              <S.Dropdown>
-                {isAuthor ? (
-                  <>
+          {showMenu && (
+            <S.MenuWrapper ref={menuRef}>
+              <S.MenuButton onClick={handleMenuClick}>
+                <MenuIcon />
+              </S.MenuButton>
+              {isMenuOpen && (
+                <S.Dropdown>
+                  {canModify && (
                     <S.DropdownItem onClick={handleEdit}>수정</S.DropdownItem>
+                  )}
+                  {canDelete && (
                     <S.DropdownItem onClick={handleDelete}>삭제</S.DropdownItem>
-                  </>
-                ) : (
-                  <S.DropdownItem onClick={handleReport}>신고</S.DropdownItem>
-                )}
-              </S.Dropdown>
-            )}
-          </S.MenuWrapper>
+                  )}
+                  {!canModify && !canDelete && (
+                    <S.DropdownItem onClick={handleReport}>신고</S.DropdownItem>
+                  )}
+                  {canAdopt && (
+                    <S.DropdownItem onClick={handleAdopt}>채택</S.DropdownItem>
+                  )}
+                </S.Dropdown>
+              )}
+            </S.MenuWrapper>
+          )}
         </S.Header>
         {isQuestion && <S.Title>{questionData.title}</S.Title>}
         <S.Content>{data.content}</S.Content>
@@ -143,12 +160,12 @@ const ContentCard: React.FC<ContentCardProps> = ({
         <S.ActionBar>
           <S.ActionButton onClick={onCommentsClick}>
             <CommentIcon />
-            댓글 {data.commentCount}
+            댓글 {data.commentNum}
           </S.ActionButton>
           {isAnswer && onFollowUpClick && (
             <S.ActionButton onClick={onFollowUpClick}>
               <QuestionIcon />
-              추가 질문 {answerData.followUpQuestionCount}
+              추가 질문 {answerData.additionalMessageNum}
             </S.ActionButton>
           )}
         </S.ActionBar>
