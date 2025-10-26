@@ -32,4 +32,5 @@ export interface AttemptQuizItem {
 export interface SolvedQuizResponse {
   attemptQuiz: AttemptQuizItem[];
   hasNext: boolean;
+  currentPage: number;
 }
