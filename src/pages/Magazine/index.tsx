@@ -109,7 +109,7 @@ const Magazine: React.FC = () => {
                 />
               ))}
             </S.MagazineGrid>
-            <div ref={observerRef} style={{ height: '20px' }} />
+            <S.ObserverTrigger ref={observerRef} />
             {isFetchingNextPage && (
               <S.EmptyState>
                 <Loader />
