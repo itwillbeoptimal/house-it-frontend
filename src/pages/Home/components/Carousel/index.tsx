@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import useCarousel from '@/pages/Home/components/Carousel/hooks/useCarousel';
 import * as S from '@/pages/Home/components/Carousel/Carousel.styles';
 
@@ -13,6 +13,8 @@ interface CarouselProps {
 }
 
 const Carousel: React.FC<CarouselProps> = ({ items, onSlideClick }) => {
+  const [dragDistance, setDragDistance] = useState(0);
+
   const {
     currentIndex,
     isDragging,
@@ -38,15 +40,16 @@ const Carousel: React.FC<CarouselProps> = ({ items, onSlideClick }) => {
     const posX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     const posY = 'touches' in e ? e.touches[0].clientY : e.clientY;
     startDragging(posX, posY);
+    setDragDistance(0);
   };
 
-  const handleTouchMove = (e: React.TouchEvent | React.MouseEvent) => {
-    const posX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const posY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-    const shouldPreventDefault = moveDragging(posX, posY);
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const posX = e.clientX;
+    const posY = e.clientY;
+    moveDragging(posX, posY);
 
-    if (shouldPreventDefault && 'touches' in e) {
-      e.preventDefault();
+    if (isDragging) {
+      setDragDistance(Math.abs(currentTranslate - prevTranslate));
     }
   };
 
@@ -55,7 +58,7 @@ const Carousel: React.FC<CarouselProps> = ({ items, onSlideClick }) => {
   };
 
   const handleSlideClick = (id: number) => {
-    if (Math.abs(currentTranslate - prevTranslate) < 5) {
+    if (dragDistance < 10) {
       onSlideClick?.(id);
     }
   };
@@ -64,15 +67,39 @@ const Carousel: React.FC<CarouselProps> = ({ items, onSlideClick }) => {
     return (index - 1 + items.length) % items.length;
   };
 
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const handleTouchMovePassive = (e: TouchEvent) => {
+      const posX = e.touches[0].clientX;
+      const posY = e.touches[0].clientY;
+      const shouldPreventDefault = moveDragging(posX, posY);
+
+      if (shouldPreventDefault) {
+        e.preventDefault();
+        setDragDistance(Math.abs(currentTranslate - prevTranslate));
+      }
+    };
+
+    track.addEventListener('touchmove', handleTouchMovePassive, {
+      passive: false,
+    });
+
+    // eslint-disable-next-line consistent-return
+    return () => {
+      track.removeEventListener('touchmove', handleTouchMovePassive);
+    };
+  }, [moveDragging, currentTranslate, prevTranslate]);
+
   return (
     <S.Container>
       <S.CarouselTrack
         ref={trackRef}
         onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onMouseDown={handleTouchStart}
-        onMouseMove={handleTouchMove}
+        onMouseMove={handleMouseMove}
         onMouseUp={handleTouchEnd}
         onMouseLeave={() => isDragging && handleTouchEnd()}
       >
