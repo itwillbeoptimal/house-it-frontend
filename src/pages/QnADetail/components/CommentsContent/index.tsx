@@ -15,22 +15,30 @@ interface CommentsContentProps {
   targetId: number;
   targetType: 'question' | 'answer';
   comments: Comment[];
+  onCommentSubmit: (content: string) => void;
+  onCommentDelete: (commentId: number) => void;
 }
 
-const CommentsContent: React.FC<CommentsContentProps> = ({ comments }) => {
-  const handleCommentSubmit = async () => {};
-
+const CommentsContent: React.FC<CommentsContentProps> = ({
+  comments,
+  onCommentSubmit,
+  onCommentDelete,
+}) => {
   return (
     <>
       <CommentsList>
         {comments.length > 0 ? (
           comments.map((comment) => (
-            <CommentItem key={comment.id} comment={comment} />
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              onDelete={() => onCommentDelete(comment.id)}
+            />
           ))
         ) : (
           <CommonStyles.EmptyState>
             <CommonStyles.EmptyMessage>
-              아직 댓글이 없습니다
+              댓글이 없습니다
             </CommonStyles.EmptyMessage>
             <CommonStyles.EmptySubMessage>
               첫 번째 댓글을 달아 보세요!
@@ -39,7 +47,7 @@ const CommentsContent: React.FC<CommentsContentProps> = ({ comments }) => {
         )}
       </CommentsList>
       <CommentInput
-        onSubmit={handleCommentSubmit}
+        onSubmit={onCommentSubmit}
         placeholder="댓글을 입력하세요"
       />
     </>
