@@ -12,15 +12,16 @@ const FollowUpList = styled.div`
 `;
 
 interface FollowUpContentProps {
-  answerId: number;
   followUpQuestions: FollowUpQuestion[];
+  onMessageSubmit: (content: string) => Promise<void>;
+  showInput?: boolean;
 }
 
 const FollowUpContent: React.FC<FollowUpContentProps> = ({
   followUpQuestions,
+  onMessageSubmit,
+  showInput = true,
 }) => {
-  const handleFollowUpSubmit = async () => {};
-
   return (
     <>
       <FollowUpList>
@@ -34,18 +35,17 @@ const FollowUpContent: React.FC<FollowUpContentProps> = ({
         ) : (
           <CommonStyles.EmptyState>
             <CommonStyles.EmptyMessage>
-              아직 추가 질문이 없습니다
+              추가 질문이 없습니다
             </CommonStyles.EmptyMessage>
-            <CommonStyles.EmptySubMessage>
-              궁금한 점을 추가로 질문해 보세요!
-            </CommonStyles.EmptySubMessage>
           </CommonStyles.EmptyState>
         )}
       </FollowUpList>
-      <CommentInput
-        onSubmit={handleFollowUpSubmit}
-        placeholder="추가 질문을 입력하세요"
-      />
+      {showInput && (
+        <CommentInput
+          onSubmit={onMessageSubmit}
+          placeholder="추가 질문을 입력하세요"
+        />
+      )}
     </>
   );
 };
