@@ -56,7 +56,7 @@ export const submitQuizAnswer = async (
 
 export const fetchSolvedQuizzes = async (
   categoryIds: number[],
-  pageNum: number = 0,
+  pageNum: number = 1,
 ): Promise<SolvedQuizResponse> => {
   const response = await apiClient.get<APIResponse<SolvedQuizResponse>>(
     '/api/quiz/solved',
@@ -64,6 +64,7 @@ export const fetchSolvedQuizzes = async (
       params: {
         categoryIds: categoryIds.join(','),
         pageNum,
+        size: 10,
       },
     },
   );
