@@ -123,11 +123,17 @@ const QnA: React.FC = () => {
         </S.ActionBar>
       </S.TabWrapper>
       <S.ContentArea>
-        {isInitialLoading ? (
+        {isInitialLoading && (
           <S.EmptyState>
             <Loader />
           </S.EmptyState>
-        ) : questions.length > 0 ? (
+        )}
+        {!isInitialLoading && questions.length === 0 && (
+          <S.EmptyState>
+            <S.EmptyMessage>해당 카테고리의 질문이 없습니다.</S.EmptyMessage>
+          </S.EmptyState>
+        )}
+        {!isInitialLoading && questions.length > 0 && (
           <>
             <S.QnAList>
               {questions.map((qna) => (
@@ -154,10 +160,6 @@ const QnA: React.FC = () => {
               </S.EmptyState>
             )}
           </>
-        ) : (
-          <S.EmptyState>
-            <S.EmptyMessage>해당 카테고리의 질문이 없습니다.</S.EmptyMessage>
-          </S.EmptyState>
         )}
       </S.ContentArea>
     </S.Container>
