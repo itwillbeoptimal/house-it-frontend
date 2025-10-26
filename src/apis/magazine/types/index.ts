@@ -44,6 +44,7 @@ export interface ScrapBoxItem {
 export interface ScrapBoxResponse {
   scrapBoxItems: ScrapBoxItem[];
   hasNext: boolean;
+  currentPage: number;
 }
 
 export interface RecommendedMagazineItem {
