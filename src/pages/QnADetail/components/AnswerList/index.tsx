@@ -8,12 +8,20 @@ interface AnswerListProps {
   answers: Answer[];
   onAnswerComments: (answerId: number) => void;
   onAnswerFollowUp: (answerId: number) => void;
+  onAnswerEdit: (answerId: number) => void;
+  onAnswerDelete: (answerId: number) => void;
+  onAnswerAdopt: (answerId: number) => void;
+  onAnswerReport: (answerId: number) => void;
 }
 
 const AnswerList: React.FC<AnswerListProps> = ({
   answers,
   onAnswerComments,
   onAnswerFollowUp,
+  onAnswerEdit,
+  onAnswerDelete,
+  onAnswerAdopt,
+  onAnswerReport,
 }) => {
   return (
     <S.AnswersSection>
@@ -27,14 +35,16 @@ const AnswerList: React.FC<AnswerListProps> = ({
               type="answer"
               onCommentsClick={() => onAnswerComments(answer.id)}
               onFollowUpClick={() => onAnswerFollowUp(answer.id)}
+              onEdit={() => onAnswerEdit(answer.id)}
+              onDelete={() => onAnswerDelete(answer.id)}
+              onAdopt={() => onAnswerAdopt(answer.id)}
+              onReport={() => onAnswerReport(answer.id)}
             />
           ))}
         </>
       ) : (
         <CommonStyles.EmptyState>
-          <CommonStyles.EmptyMessage>
-            아직 답변이 없습니다
-          </CommonStyles.EmptyMessage>
+          <CommonStyles.EmptyMessage>답변이 없습니다</CommonStyles.EmptyMessage>
           <CommonStyles.EmptySubMessage>
             첫 번째 답변을 달아보세요!
           </CommonStyles.EmptySubMessage>
