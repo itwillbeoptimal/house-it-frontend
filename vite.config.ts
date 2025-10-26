@@ -48,6 +48,7 @@ export default defineConfig(({ mode, command }) => {
           ],
         },
         workbox: {
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
           globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
           cleanupOutdatedCaches: true,
           navigateFallback: '/index.html',
@@ -97,6 +98,18 @@ export default defineConfig(({ mode, command }) => {
     ],
     resolve: {
       alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+            'query-vendor': ['@tanstack/react-query'],
+            'emotion-vendor': ['@emotion/react', '@emotion/styled'],
+          },
+        },
+      },
+      chunkSizeWarningLimit: 1000,
     },
     server: {
       proxy: {
