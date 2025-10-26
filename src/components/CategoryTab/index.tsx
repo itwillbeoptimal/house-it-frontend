@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import * as S from '@/components/CategoryTab/CategoryTab.styles';
-import { MAGAZINE_CATEGORIES, QNA_CATEGORIES } from '@/constants/categories';
+import {
+  MAGAZINE_CATEGORIES,
+  QNA_CATEGORIES,
+  QUIZ_CATEGORIES,
+} from '@/constants/categories';
 
 interface CategoryTabProps {
-  activeTab: 'magazine' | 'qna';
+  activeTab: 'magazine' | 'qna' | 'quiz';
   onFilterChange: (categoryId: number) => void;
 }
 
@@ -13,8 +17,17 @@ const CategoryTab: React.FC<CategoryTabProps> = ({
 }) => {
   const [activeFilter, setActiveFilter] = useState<number>(1);
 
-  const categories =
-    activeTab === 'magazine' ? MAGAZINE_CATEGORIES : QNA_CATEGORIES;
+  const getTabCategories = () => {
+    if (activeTab === 'magazine') {
+      return MAGAZINE_CATEGORIES;
+    }
+    if (activeTab === 'qna') {
+      return QNA_CATEGORIES;
+    }
+    return Object.fromEntries(
+      Object.entries(QUIZ_CATEGORIES).map(([key, value]) => [key, value.title]),
+    );
+  };
 
   const handleFilterClick = (categoryId: number) => {
     setActiveFilter(categoryId);
@@ -23,7 +36,7 @@ const CategoryTab: React.FC<CategoryTabProps> = ({
 
   return (
     <S.Container>
-      {Object.entries(categories).map(([id, label]) => (
+      {Object.entries(getTabCategories()).map(([id, label]) => (
         <S.TabButton
           key={id}
           active={activeFilter === Number(id)}
