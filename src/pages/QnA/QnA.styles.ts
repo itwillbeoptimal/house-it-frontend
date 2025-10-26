@@ -11,11 +11,12 @@ export const TabWrapper = styled.div`
   top: 72px;
   padding: 0 20px;
 `;
+
 export const ContentArea = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 0 20px 20px 20px;
+  padding: 0 20px;
 `;
 
 export const QnAList = styled.div`
@@ -64,4 +65,9 @@ export const MyQnAButton = styled.button`
   & svg {
     fill: ${(props) => props.theme.COLORS.MAIN.PRIMARY};
   }
+`;
+
+export const ObserverTrigger = styled.div`
+  height: 20px;
+  visibility: hidden;
 `;
