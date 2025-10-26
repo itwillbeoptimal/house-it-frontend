@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getFcmToken } from '@/services/firebase/notification';
+import { updateFcmToken } from '@/apis/user';
 import useModal from '@/hooks/useModal';
+import getNotificationPermission from '@/utils/getNotificationPermission';
 
 const OAuthCallback: React.FC = () => {
   const navigate = useNavigate();
@@ -8,38 +11,44 @@ const OAuthCallback: React.FC = () => {
   const { alert } = useModal();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const success = params.get('success');
-    const token = params.get('token');
-    const refresh = params.get('refresh');
-    const returnTo = params.get('returnTo') || '/';
+    const handleOAuthCallback = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const success = params.get('success');
+      const accessToken = params.get('accessToken');
+      const returnTo = params.get('returnTo') || '/';
 
-    if (success === 'false') {
-      alert({
-        title: '로그인 실패',
-        content: '로그인 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.',
-        onConfirm: () => {
-          navigate('/login');
-        },
-      });
+      if (success === 'false') {
+        alert({
+          title: '로그인 실패',
+          content: '로그인 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+          onConfirm: () => {
+            navigate('/login');
+          },
+        });
+        return;
+      }
 
-      return;
-    }
+      if (accessToken) {
+        localStorage.setItem('accessToken', accessToken);
 
-    if (token && refresh) {
-      localStorage.setItem('accessToken', token);
-      localStorage.setItem('refreshToken', refresh);
+        const permission = getNotificationPermission();
+        if (permission === 'granted') {
+          const fcmToken = await getFcmToken();
+          if (fcmToken) {
+            await updateFcmToken({ fcmToken });
+          }
+        }
 
-      window.history.replaceState({}, '', window.location.pathname);
-
-      setTimeout(() => {
+        window.history.replaceState({}, '', window.location.pathname);
         navigate(returnTo, { replace: true });
-      }, 0);
-      return;
-    }
+        return;
+      }
 
-    navigate('/login');
-  }, [navigate]);
+      navigate('/login');
+    };
+
+    handleOAuthCallback();
+  }, [navigate, alert]);
 
   return null;
 };
