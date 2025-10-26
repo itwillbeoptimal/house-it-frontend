@@ -74,8 +74,7 @@ const Home: React.FC = () => {
       try {
         await Promise.all(imagePromises);
         setIsLoading(false);
-      } catch (error) {
-        console.error('이미지 로딩 실패:', error);
+      } catch {
         setIsLoading(false);
       }
     };
