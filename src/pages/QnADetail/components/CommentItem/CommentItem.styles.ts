@@ -17,6 +17,7 @@ export const Content = styled.div`
 export const Header = styled.div`
   display: flex;
   align-items: center;
+  width: 100%;
   gap: 8px;
   margin-bottom: 6px;
 `;
