@@ -29,10 +29,10 @@ export const CreatedAt = styled.span`
 
 export const EmptyState = styled.div`
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px 20px;
 `;
 
 export const EmptyMessage = styled.p`
