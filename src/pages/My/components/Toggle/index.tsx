@@ -1,5 +1,5 @@
 import React from 'react';
-import * as S from '@/pages/My/components/Toggle/Toggle.styles'
+import * as S from '@/pages/My/components/Toggle/Toggle.styles';
 
 interface ToggleProps {
   checked: boolean;
