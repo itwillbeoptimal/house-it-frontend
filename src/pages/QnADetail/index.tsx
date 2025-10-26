@@ -1,18 +1,29 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import useSubpageHeader from '@/hooks/useSubpageHeader';
+import useModal from '@/hooks/useModal';
 import useBottomSheet from '@/hooks/useBottomSheet';
+import useQuestionDetailQuery from '@/hooks/queries/qna/useQuestionDetailQuery';
+import useAnswersQuery from '@/hooks/queries/qna/useAnswersQuery';
+import useCommentsQuery from '@/hooks/queries/qna/useCommentsQuery';
+import useAdditionalQuestionQuery from '@/hooks/queries/qna/useAdditionalQuestionQuery';
+import {
+  useDeleteAnswerMutation,
+  useAdoptAnswerMutation,
+} from '@/hooks/mutations/qna/useAnswerMutations';
+import { useDeleteQuestionMutation } from '@/hooks/mutations/qna/useQuestionMutations';
+import {
+  useCreateCommentMutation,
+  useDeleteCommentMutation,
+} from '@/hooks/mutations/qna/useCommentMutations';
+import { useCreateAdditionalQuestionMessageMutation } from '@/hooks/mutations/qna/useAdditionalQuestionMutations';
 import * as S from '@/pages/QnADetail/QnADetail.styles';
 import ContentCard from '@/pages/QnADetail/components/ContentCard';
 import AnswerList from '@/pages/QnADetail/components/AnswerList';
 import CommentsContent from '@/pages/QnADetail/components/CommentsContent';
 import FollowUpContent from '@/pages/QnADetail/components/FollowUpContent';
-import {
-  QNA_DETAIL_MOCK_DATA,
-  QNA_ANSWERS_MOCK_DATA,
-  QNA_COMMENTS_MOCK_DATA,
-  QNA_FOLLOWUP_QUESTIONS_MOCK_DATA,
-} from '@/constants/mockData/qnaDetailData';
+import WriteIcon from '@/assets/icons/write.svg?react';
 
 const QnADetail: React.FC = () => {
   useSubpageHeader({
@@ -20,63 +31,265 @@ const QnADetail: React.FC = () => {
   });
 
   const { questionId } = useParams<{ questionId: string }>();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const numericQuestionId = questionId ? parseInt(questionId, 10) : null;
 
+  const { closeModal, loading, alert, confirm } = useModal();
   const { openBottomSheet } = useBottomSheet();
 
-  if (!numericQuestionId) {
-    return null;
-  }
+  const [isMutating, setIsMutating] = useState(false);
+  const loadingModalIdRef = React.useRef<string | null>(null);
 
-  const question = QNA_DETAIL_MOCK_DATA[numericQuestionId];
-  const answers = QNA_ANSWERS_MOCK_DATA[numericQuestionId] || [];
+  const { data: questionData, isLoading: isLoadingQuestion } =
+    useQuestionDetailQuery(numericQuestionId!, !isMutating);
+
+  const { data: answersData, isLoading: isLoadingAnswers } = useAnswersQuery(
+    numericQuestionId!,
+    5,
+    !isMutating,
+  );
+
+  const deleteAnswerMutation = useDeleteAnswerMutation();
+  const adoptAnswerMutation = useAdoptAnswerMutation();
+  const deleteQuestionMutation = useDeleteQuestionMutation();
+
+  const question = useMemo(() => {
+    if (!questionData) return null;
+    return {
+      id: questionData.question.questionId,
+      categoryId: questionData.question.questionCategory,
+      title: questionData.question.questionTitle,
+      content: questionData.question.questionContent,
+      author: questionData.question.questionWriterName,
+      authorProfileUrl: questionData.question.questionWriterProfile,
+      createdAt: questionData.question.createdAt,
+      answerCount: 0,
+      isAnswered: false,
+      images: questionData.question.images
+        ? questionData.question.images.map((img) => img.imageUrl)
+        : [],
+      commentNum: questionData.question.commentNum,
+      canModify: questionData.authority.canModify,
+      canDelete: questionData.authority.canDelete,
+      canWrite: questionData.authority.canWrite,
+    };
+  }, [questionData]);
+
+  const answers = useMemo(() => {
+    return (
+      answersData?.pages.flatMap((page) =>
+        page.responses.map((response) => ({
+          id: response.responseId,
+          content: response.responseContent,
+          author: response.responseWriterName,
+          authorProfileUrl: response.responseWriterProfile,
+          createdAt: response.createdAt,
+          images: response.images
+            ? response.images.map((img) => img.imageUrl)
+            : [],
+          imageDetails: response.images || [],
+          isAI: response.isAi,
+          commentNum: response.commentNum,
+          additionalMessageNum: response.additionalMessageNum,
+          canAdopt: response.authority.canAdopt,
+          canModify: response.authority.canModify,
+          canDelete: response.authority.canDelete,
+        })),
+      ) || []
+    );
+  }, [answersData]);
+
+  useEffect(() => {
+    if ((isLoadingQuestion || isLoadingAnswers) && !isMutating) {
+      const startTime = Date.now();
+      const modalId = `loading-modal-${Date.now()}`;
+      loadingModalIdRef.current = modalId;
+
+      loading({
+        loadingText: '게시글을 불러오고 있어요.',
+        disableBackdropClick: true,
+      });
+
+      return () => {
+        const elapsed = Date.now() - startTime;
+        setTimeout(
+          () => {
+            if (loadingModalIdRef.current === modalId) {
+              closeModal('loading-modal');
+              loadingModalIdRef.current = null;
+            }
+          },
+          Math.max(0, 500 - elapsed),
+        );
+      };
+    }
+    return undefined;
+  }, [isLoadingQuestion, isLoadingAnswers, isMutating]);
+
+  const handleQuestionEdit = () => {
+    if (!numericQuestionId) return;
+    navigate(`/qna/${numericQuestionId}/edit`);
+  };
+
+  const handleQuestionDelete = () => {
+    confirm({
+      title: '질문 삭제',
+      content: '정말 이 질문을 삭제하시겠습니까?',
+      onConfirm: async () => {
+        if (!numericQuestionId || deleteQuestionMutation.isPending) return;
+
+        try {
+          setIsMutating(true);
+          await deleteQuestionMutation.mutateAsync(numericQuestionId);
+
+          alert({
+            title: '삭제 완료',
+            content: '질문이 삭제되었습니다.',
+            onConfirm: () => {
+              setIsMutating(false);
+              navigate('/qna');
+            },
+          });
+        } catch {
+          setIsMutating(false);
+          alert({
+            title: '삭제 실패',
+            content: '질문 삭제 중 오류가 발생했습니다.',
+          });
+        }
+      },
+    });
+  };
+
+  const handleQuestionReport = () => {
+    if (!numericQuestionId) return;
+    navigate(`/qna/report/question/${numericQuestionId}`);
+  };
+
+  const handleAnswerEdit = (answerId: number) => {
+    const answerToEdit = answers.find((answer) => answer.id === answerId);
+    navigate(`/qna/${numericQuestionId}/edit/answer/${answerId}`, {
+      state: { answerData: answerToEdit },
+    });
+  };
+
+  const handleAnswerDelete = (answerId: number) => {
+    confirm({
+      title: '답변 삭제',
+      content: '정말 이 답변을 삭제하시겠습니까?',
+      onConfirm: async () => {
+        if (deleteAnswerMutation.isPending) return;
+
+        try {
+          setIsMutating(true);
+          await deleteAnswerMutation.mutateAsync(answerId);
+
+          alert({
+            title: '삭제 완료',
+            content: '답변이 삭제되었습니다.',
+            onConfirm: () => {
+              queryClient.invalidateQueries({ queryKey: ['answers'] });
+              queryClient.invalidateQueries({ queryKey: ['question'] });
+              setIsMutating(false);
+            },
+          });
+        } catch {
+          setIsMutating(false);
+          alert({
+            title: '삭제 실패',
+            content: '답변 삭제 중 오류가 발생했습니다.',
+          });
+        }
+      },
+    });
+  };
+
+  const handleAnswerAdopt = (answerId: number) => {
+    confirm({
+      title: '답변 채택',
+      content: '이 답변을 채택하시겠습니까?',
+      onConfirm: async () => {
+        if (adoptAnswerMutation.isPending) return;
+
+        try {
+          setIsMutating(true);
+          await adoptAnswerMutation.mutateAsync(answerId);
+
+          alert({
+            title: '채택 완료',
+            content: '답변이 채택되었습니다.',
+            onConfirm: () => {
+              queryClient.invalidateQueries({ queryKey: ['answers'] });
+              queryClient.invalidateQueries({ queryKey: ['question'] });
+              queryClient.invalidateQueries({ queryKey: ['questions'] });
+              setIsMutating(false);
+            },
+          });
+        } catch {
+          setIsMutating(false);
+          alert({
+            title: '채택 실패',
+            content: '답변 채택 중 오류가 발생했습니다.',
+          });
+        }
+      },
+    });
+  };
+
+  const handleAnswerReport = (answerId: number) => {
+    if (!numericQuestionId) return;
+    navigate(`/qna/report/answer/${answerId}`);
+  };
 
   const handleQuestionComments = () => {
-    const comments = QNA_COMMENTS_MOCK_DATA[`question-${question.id}`] || [];
+    if (!question) return;
+
     openBottomSheet({
       id: 'question-comments',
       title: '댓글',
       content: (
-        <CommentsContent
-          targetId={question.id}
-          targetType="question"
-          comments={comments}
-        />
+        <CommentsContentWrapper targetId={question.id} targetType="QUESTION" />
       ),
       hasMaxHeight: true,
     });
   };
 
   const handleAnswerComments = (answerId: number) => {
-    const comments = QNA_COMMENTS_MOCK_DATA[`answer-${answerId}`] || [];
     openBottomSheet({
       id: 'answer-comments',
       title: '댓글',
       content: (
-        <CommentsContent
-          targetId={answerId}
-          targetType="answer"
-          comments={comments}
-        />
+        <CommentsContentWrapper targetId={answerId} targetType="RESPONSE" />
       ),
       hasMaxHeight: true,
     });
   };
 
   const handleAnswerFollowUp = (answerId: number) => {
-    const followUpQuestions =
-      QNA_FOLLOWUP_QUESTIONS_MOCK_DATA[`answer-${answerId}`] || [];
+    if (!numericQuestionId) return;
+
     openBottomSheet({
       id: 'answer-followup',
       title: '추가 질문',
       content: (
-        <FollowUpContent
+        <FollowUpContentWrapper
+          questionId={numericQuestionId}
           answerId={answerId}
-          followUpQuestions={followUpQuestions}
         />
       ),
+      hasMaxHeight: true,
     });
   };
+
+  const handleWriteAnswer = () => {
+    if (!numericQuestionId) return;
+    navigate(`/qna/${numericQuestionId}/answer`);
+  };
+
+  if (!numericQuestionId || !question) {
+    return null;
+  }
 
   return (
     <S.Container>
@@ -84,13 +297,184 @@ const QnADetail: React.FC = () => {
         data={question}
         type="question"
         onCommentsClick={handleQuestionComments}
+        onEdit={handleQuestionEdit}
+        onDelete={handleQuestionDelete}
+        onReport={handleQuestionReport}
       />
       <AnswerList
         answers={answers}
         onAnswerComments={handleAnswerComments}
         onAnswerFollowUp={handleAnswerFollowUp}
+        onAnswerEdit={handleAnswerEdit}
+        onAnswerDelete={handleAnswerDelete}
+        onAnswerAdopt={handleAnswerAdopt}
+        onAnswerReport={handleAnswerReport}
       />
+      {question.canWrite && (
+        <S.WriteButton onClick={handleWriteAnswer}>
+          <WriteIcon />
+        </S.WriteButton>
+      )}
     </S.Container>
+  );
+};
+
+const CommentsContentWrapper: React.FC<{
+  targetId: number;
+  targetType: 'QUESTION' | 'RESPONSE';
+}> = ({ targetId, targetType }) => {
+  const { data: commentsData } = useCommentsQuery(targetId, targetType, 5);
+  const createCommentMutation = useCreateCommentMutation();
+  const deleteCommentMutation = useDeleteCommentMutation();
+  const { alert, confirm } = useModal();
+
+  const comments = useMemo(() => {
+    return (
+      commentsData?.pages.flatMap((page) =>
+        page.commentItemList.map((comment) => ({
+          id: comment.commentId,
+          content: comment.content,
+          author: comment.nickname,
+          authorProfileUrl: comment.profileImage,
+          createdAt: comment.createdAt,
+          canModify: comment.authority.canModify,
+          canDelete: comment.authority.canDelete,
+        })),
+      ) || []
+    );
+  }, [commentsData]);
+
+  const handleCommentSubmit = async (content: string) => {
+    try {
+      await createCommentMutation.mutateAsync({
+        targetId,
+        commentType: targetType,
+        content,
+      });
+    } catch {
+      alert({
+        title: '댓글 작성 실패',
+        content: '댓글 작성 중 오류가 발생했습니다.',
+      });
+    }
+  };
+
+  const handleCommentDelete = (commentId: number) => {
+    confirm({
+      title: '댓글 삭제',
+      content: '정말 이 댓글을 삭제하시겠습니까?',
+      onConfirm: async () => {
+        if (deleteCommentMutation.isPending) return;
+
+        try {
+          await deleteCommentMutation.mutateAsync({
+            commentId,
+            commentType: targetType,
+          });
+
+          alert({
+            title: '삭제 완료',
+            content: '댓글이 삭제되었습니다.',
+          });
+        } catch {
+          alert({
+            title: '삭제 실패',
+            content: '댓글 삭제 중 오류가 발생했습니다.',
+          });
+        }
+      },
+    });
+  };
+
+  return (
+    <CommentsContent
+      targetId={targetId}
+      targetType={targetType === 'QUESTION' ? 'question' : 'answer'}
+      comments={comments}
+      onCommentSubmit={handleCommentSubmit}
+      onCommentDelete={handleCommentDelete}
+    />
+  );
+};
+
+const FollowUpContentWrapper: React.FC<{
+  questionId: number;
+  answerId: number;
+}> = ({ questionId, answerId }) => {
+  const { alert } = useModal();
+  const queryClient = useQueryClient();
+  const createAdditionalQuestionMessageMutation =
+    useCreateAdditionalQuestionMessageMutation();
+
+  const [followUpRoomId, setFollowUpRoomId] = useState<number | null>(null);
+
+  const { data: additionalQuestionData } = useAdditionalQuestionQuery(
+    followUpRoomId!,
+    questionId,
+  );
+
+  const messages = useMemo(() => {
+    if (!additionalQuestionData) return [];
+
+    return additionalQuestionData.messageList.map((message) => ({
+      id: message.messageId,
+      content: message.content,
+      author: message.isQuestioner ? '질문자' : '답변자',
+      isQuestioner: message.isQuestioner,
+      isAnswered: !message.isQuestioner,
+      createdAt: message.createdAt,
+    }));
+  }, [additionalQuestionData]);
+
+  const lastMessageIsQuestioner =
+    messages.length > 0 ? messages[messages.length - 1].isQuestioner : null;
+
+  let shouldShowInput = false;
+
+  if (additionalQuestionData) {
+    const { canWrite, isThirdParty } = additionalQuestionData.authority;
+
+    if (!isThirdParty && canWrite) {
+      if (messages.length === 0) {
+        shouldShowInput = true;
+      } else if (lastMessageIsQuestioner === false) {
+        shouldShowInput = true;
+      }
+    }
+  } else {
+    shouldShowInput = true;
+  }
+
+  const handleMessageSubmit = async (content: string) => {
+    try {
+      const response =
+        await createAdditionalQuestionMessageMutation.mutateAsync({
+          questionId,
+          responseId: answerId,
+          content,
+        });
+
+      if (response.followUpRoomId) {
+        setFollowUpRoomId(response.followUpRoomId);
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: ['additional-question', followUpRoomId, questionId],
+      });
+    } catch {
+      alert({
+        title: '메시지 전송 실패',
+        content: '메시지 전송 중 오류가 발생했습니다.',
+      });
+    }
+  };
+
+  return (
+    <FollowUpContent
+      followUpQuestions={messages}
+      onMessageSubmit={handleMessageSubmit}
+      showInput={shouldShowInput}
+    />
   );
 };
 
