@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useHeaderButton from '@/hooks/useHeaderButton';
+import useInfiniteScroll from '@/hooks/useInfiniteScroll';
 import usePopularPostsQuery from '@/hooks/queries/qna/usePopularPostsQuery';
 import useQuestionsQuery from '@/hooks/queries/qna/useQuestionsQuery';
 import * as S from '@/pages/QnA/QnA.styles';
@@ -16,7 +17,6 @@ import ArrowIcon from '@/assets/icons/arrow.svg?react';
 const QnA: React.FC = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number>(1);
   const [showCompleteOnly, setShowCompleteOnly] = useState<boolean>(false);
-  const observerRef = useRef<HTMLDivElement>(null);
 
   const navigate = useNavigate();
 
@@ -42,26 +42,11 @@ const QnA: React.FC = () => {
     isFetchingNextPage,
   } = useQuestionsQuery([selectedCategoryId], undefined, 5, showCompleteOnly);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-
-    return () => {
-      if (observerRef.current) {
-        observer.unobserve(observerRef.current);
-      }
-    };
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  const observerRef = useInfiniteScroll({
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  });
 
   const questions = useMemo(() => {
     return questionsData?.pages.flatMap((page) => page.questionListItems) || [];

@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useSubpageHeader from '@/hooks/useSubpageHeader';
+import useInfiniteScroll from '@/hooks/useInfiniteScroll';
 import useSolvedQuizzesQuery from '@/hooks/queries/quiz/useSolvedQuizzesQuery';
 import * as S from '@/pages/QuizArchive/QuizArchive.styles';
 import CategoryTab from '@/components/CategoryTab';
@@ -11,7 +12,6 @@ const QuizArchive: React.FC = () => {
   useSubpageHeader({ title: '퀴즈 보관함' });
 
   const navigate = useNavigate();
-  const observerRef = useRef<HTMLDivElement>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number>(1);
 
   const categoryIds = useMemo(() => {
@@ -30,26 +30,11 @@ const QuizArchive: React.FC = () => {
     isFetchingNextPage,
   } = useSolvedQuizzesQuery(categoryIds);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-
-    return () => {
-      if (observerRef.current) {
-        observer.unobserve(observerRef.current);
-      }
-    };
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  const observerRef = useInfiniteScroll({
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  });
 
   const handleFilterChange = (categoryId: number) => {
     setSelectedCategoryId(categoryId);

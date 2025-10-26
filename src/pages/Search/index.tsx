@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import type { SearchType } from '@/apis/search/types';
+import useInfiniteScroll from '@/hooks/useInfiniteScroll';
 import useRecommendTermsQuery from '@/hooks/queries/search/useRecommendTermsQuery';
 import useAutocompleteQuery from '@/hooks/queries/search/useAutocompleteQuery';
 import useSearchQuery from '@/hooks/queries/search/useSearchQuery';
@@ -21,8 +22,6 @@ const Search: React.FC = () => {
   const [searchType, setSearchType] = useState<SearchType>(type);
   const [showAutocomplete, setShowAutocomplete] = useState(false);
   const autocompleteRef = useRef<HTMLDivElement>(null);
-  const magazineObserverRef = useRef<HTMLDivElement>(null);
-  const questionObserverRef = useRef<HTMLDivElement>(null);
 
   const { data: recommendTerms } = useRecommendTermsQuery();
   const { data: autocompleteData } = useAutocompleteQuery(searchTerm, 10);
@@ -49,6 +48,18 @@ const Search: React.FC = () => {
   const filteredSuggestions =
     autocompleteData?.results?.filter((item) => item && item.keyword) || [];
 
+  const magazineObserverRef = useInfiniteScroll({
+    hasNextPage: searchType === 'magazine' ? hasNextMagazinePage : false,
+    isFetchingNextPage: isFetchingNextMagazinePage,
+    fetchNextPage: fetchNextMagazinePage,
+  });
+
+  const questionObserverRef = useInfiniteScroll({
+    hasNextPage: searchType === 'question' ? hasNextQuestionPage : false,
+    isFetchingNextPage: isFetchingNextQuestionPage,
+    fetchNextPage: fetchNextQuestionPage,
+  });
+
   useEffect(() => {
     setSearchTerm(keyword);
   }, [keyword]);
@@ -72,70 +83,6 @@ const Search: React.FC = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
-  useEffect(() => {
-    if (searchType !== 'magazine') return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (
-          entries[0].isIntersecting &&
-          hasNextMagazinePage &&
-          !isFetchingNextMagazinePage
-        ) {
-          fetchNextMagazinePage();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    if (magazineObserverRef.current) {
-      observer.observe(magazineObserverRef.current);
-    }
-
-    return () => {
-      if (magazineObserverRef.current) {
-        observer.unobserve(magazineObserverRef.current);
-      }
-    };
-  }, [
-    searchType,
-    hasNextMagazinePage,
-    isFetchingNextMagazinePage,
-    fetchNextMagazinePage,
-  ]);
-
-  useEffect(() => {
-    if (searchType !== 'question') return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (
-          entries[0].isIntersecting &&
-          hasNextQuestionPage &&
-          !isFetchingNextQuestionPage
-        ) {
-          fetchNextQuestionPage();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    if (questionObserverRef.current) {
-      observer.observe(questionObserverRef.current);
-    }
-
-    return () => {
-      if (questionObserverRef.current) {
-        observer.unobserve(questionObserverRef.current);
-      }
-    };
-  }, [
-    searchType,
-    hasNextQuestionPage,
-    isFetchingNextQuestionPage,
-    fetchNextQuestionPage,
-  ]);
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
@@ -335,6 +282,7 @@ const Search: React.FC = () => {
             />
           ))}
         </S.ContentArea>
+        <S.ObserverTrigger ref={magazineObserverRef} />
         {isFetchingNextMagazinePage && (
           <S.EmptyState>
             <Loader />
@@ -387,6 +335,7 @@ const Search: React.FC = () => {
             />
           ))}
         </S.ContentArea>
+        <S.ObserverTrigger ref={questionObserverRef} />
         {isFetchingNextQuestionPage && (
           <S.EmptyState>
             <Loader />
@@ -446,7 +395,6 @@ const Search: React.FC = () => {
             </S.TagList>
           </>
         )}
-        <S.ObserverTrigger ref={magazineObserverRef} />
       </S.Container>
     </>
   );

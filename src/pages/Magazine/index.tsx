@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useInfiniteScroll from '@/hooks/useInfiniteScroll';
 import useMagazineListQuery from '@/hooks/queries/magazine/useMagazineListQuery';
 import * as S from '@/pages/Magazine/Magazine.styles';
 import CategoryTab from '@/components/CategoryTab';
@@ -8,7 +9,6 @@ import Loader from '@/components/Loader';
 
 const Magazine: React.FC = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number>(1);
-  const observerRef = useRef<HTMLDivElement>(null);
 
   const navigate = useNavigate();
   const {
@@ -20,26 +20,11 @@ const Magazine: React.FC = () => {
     isFetchingNextPage,
   } = useMagazineListQuery(selectedCategoryId);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-
-    return () => {
-      if (observerRef.current) {
-        observer.unobserve(observerRef.current);
-      }
-    };
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  const observerRef = useInfiniteScroll({
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  });
 
   const handleFilterChange = (categoryId: number) => {
     setSelectedCategoryId(categoryId);

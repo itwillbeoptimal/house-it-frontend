@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import useSubpageHeader from '@/hooks/useSubpageHeader';
+import useInfiniteScroll from '@/hooks/useInfiniteScroll';
 import useScrapBoxQuery from '@/hooks/queries/magazine/useScrapBoxQuery';
 import * as S from '@/pages/MagazineScrapBox/MagazineScrapBox.styles';
 import ScrapMagazineCard from '@/pages/MagazineScrapBox/components/ScrapMagazineCard';
@@ -10,7 +11,6 @@ const MagazineScrapBox: React.FC = () => {
   useSubpageHeader({ title: '스크랩한 매거진' });
 
   const navigate = useNavigate();
-  const observerRef = useRef<HTMLDivElement>(null);
 
   const {
     data,
@@ -21,26 +21,11 @@ const MagazineScrapBox: React.FC = () => {
     isFetchingNextPage,
   } = useScrapBoxQuery();
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-
-    return () => {
-      if (observerRef.current) {
-        observer.unobserve(observerRef.current);
-      }
-    };
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  const observerRef = useInfiniteScroll({
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  });
 
   const handleMagazineClick = (magazineId: number) => {
     navigate(`/magazine/${magazineId}`);

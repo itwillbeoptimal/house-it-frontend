@@ -1,14 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import type { QnAItem } from '@/pages/QnA/types';
 import useSubpageHeader from '@/hooks/useSubpageHeader';
+import useInfiniteScroll from '@/hooks/useInfiniteScroll';
 import useMyQuestionsQuery from '@/hooks/queries/qna/useMyQuestionsQuery';
 import * as S from '@/pages/MyQnA/MyQnA.styles';
 import Loader from '@/components/Loader';
 import QnACard from '@/pages/QnA/components/QnACard';
 
 const MyQnA: React.FC = () => {
-  const observerRef = useRef<HTMLDivElement>(null);
-
   useSubpageHeader({
     title: '나의 Q&A',
   });
@@ -22,26 +21,11 @@ const MyQnA: React.FC = () => {
     isFetchingNextPage,
   } = useMyQuestionsQuery();
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-
-    return () => {
-      if (observerRef.current) {
-        observer.unobserve(observerRef.current);
-      }
-    };
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  const observerRef = useInfiniteScroll({
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  });
 
   if (isLoading) {
     return (
