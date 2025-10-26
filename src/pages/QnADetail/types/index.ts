@@ -9,7 +9,10 @@ export interface QnADetail {
   answerCount: number;
   isAnswered: boolean;
   images?: string[];
-  commentCount: number;
+  commentNum: number;
+  canModify: boolean;
+  canDelete: boolean;
+  canWrite: boolean;
 }
 
 export interface Comment {
@@ -18,6 +21,8 @@ export interface Comment {
   author: string;
   authorProfileUrl?: string;
   createdAt: string;
+  canModify: boolean;
+  canDelete: boolean;
 }
 
 export interface Answer {
@@ -28,8 +33,11 @@ export interface Answer {
   createdAt: string;
   images?: string[];
   isAI?: boolean;
-  commentCount: number;
-  followUpQuestionCount: number;
+  commentNum: number;
+  additionalMessageNum: number;
+  canAdopt: boolean;
+  canModify: boolean;
+  canDelete: boolean;
 }
 
 export interface FollowUpQuestion {
