@@ -56,14 +56,12 @@ const QnACard: React.FC<QnACardProps> = ({
       </S.AuthorInfo>
       <S.Title>{title}</S.Title>
       <S.Content>{truncateContent(content)}</S.Content>
-      <S.Footer>
-        <S.AnswerInfo>
-          <S.AnswerBadge isAnswered={isAnswered}>
-            {isAnswered ? '답변완료' : '답변대기'}
-          </S.AnswerBadge>
-          <S.AnswerCount>답변 {answerCount}</S.AnswerCount>
-        </S.AnswerInfo>
-      </S.Footer>
+      <S.AnswerInfo>
+        <S.AnswerBadge isAnswered={isAnswered}>
+          {isAnswered ? '답변완료' : '답변대기'}
+        </S.AnswerBadge>
+        <S.AnswerCount>답변 {answerCount}</S.AnswerCount>
+      </S.AnswerInfo>
     </S.Container>
   );
 };

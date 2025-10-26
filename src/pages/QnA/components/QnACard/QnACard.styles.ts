@@ -74,6 +74,7 @@ export const Title = styled.h2`
 
 export const Content = styled.p`
   display: -webkit-box;
+  flex: 1;
   margin-bottom: 12px;
   color: ${(props) => props.theme.COLORS.LABEL.SECONDARY};
   font-size: 13px;
@@ -81,12 +82,6 @@ export const Content = styled.p`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-`;
-
-export const Footer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 `;
 
 export const AnswerInfo = styled.div`
