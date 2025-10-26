@@ -1,28 +1,15 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import useHeaderButton from '@/hooks/useHeaderButton';
 import useCategoryStatisticsQuery from '@/hooks/queries/quiz/useCategoryStatisticsQuery';
 import * as S from '@/pages/Quiz/Quiz.styles';
 import Banner from '@/pages/Quiz/components/Banner';
 import QuizCategoryCard from '@/pages/Quiz/components/QuizCategoryCard';
-import BoxIcon from '@/assets/icons/box.svg?react';
 import { QUIZ_CATEGORIES } from '@/constants/categories';
 
 const Quiz: React.FC = () => {
   const navigate = useNavigate();
   const { data: statistics, isLoading: isLoadingStatistics } =
     useCategoryStatisticsQuery();
-
-  useHeaderButton(
-    <button
-      type="button"
-      onClick={() => {
-        navigate('/quiz/archive');
-      }}
-    >
-      <BoxIcon />
-    </button>,
-  );
 
   const handleBannerClick = () => {
     navigate('/quiz/play/today');
