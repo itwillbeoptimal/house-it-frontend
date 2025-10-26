@@ -16,14 +16,25 @@ import CorrectImage from '@/assets/images/correct.png';
 import { QUIZ_CATEGORIES } from '@/constants/categories';
 
 const QuizPlay: React.FC = () => {
-  const { categoryId } = useParams<{ categoryId: string }>();
+  const { categoryId, quizId } = useParams<{
+    categoryId: string;
+    quizId: string;
+  }>();
   const navigate = useNavigate();
   const location = useLocation();
   const { openModal, closeModal, alert, loading } = useModal();
   const [isReady, setIsReady] = useState(false);
 
   const isTodayQuiz = location.pathname === '/quiz/play/today';
+  const isSolvedQuiz = location.pathname === '/quiz/play/solved';
   const numericCategoryId = categoryId ? Number(categoryId) : 0;
+
+  let numericQuizId = 0;
+  if (isSolvedQuiz) {
+    numericQuizId = (location.state as { quizId?: number })?.quizId || 0;
+  } else if (quizId) {
+    numericQuizId = Number(quizId);
+  }
 
   const { data: todayQuizId, isLoading: isTodayIdLoading } =
     useTodayQuizIdQuery();
@@ -42,11 +53,26 @@ const QuizPlay: React.FC = () => {
     error: categoryQuizError,
   } = useQuizByCategoryIdQuery(numericCategoryId);
 
-  const quiz = isTodayQuiz ? todayQuiz : categoryQuiz;
-  const isLoading = isTodayQuiz
-    ? isTodayIdLoading || isTodayQuizLoading
-    : isCategoryQuizLoading;
-  const refetch = isTodayQuiz ? refetchTodayQuiz : refetchCategoryQuiz;
+  const { data: solvedQuiz, isLoading: isSolvedQuizLoading } =
+    useQuizQuery(numericQuizId);
+
+  let quiz;
+  let isLoading;
+  let refetch;
+
+  if (isSolvedQuiz) {
+    quiz = solvedQuiz;
+    isLoading = isSolvedQuizLoading;
+    refetch = undefined;
+  } else if (isTodayQuiz) {
+    quiz = todayQuiz;
+    isLoading = isTodayIdLoading || isTodayQuizLoading;
+    refetch = refetchTodayQuiz;
+  } else {
+    quiz = categoryQuiz;
+    isLoading = isCategoryQuizLoading;
+    refetch = refetchCategoryQuiz;
+  }
 
   const submitMutation = useQuizSubmitMutation();
 
@@ -63,8 +89,17 @@ const QuizPlay: React.FC = () => {
   const categoryTitle =
     QUIZ_CATEGORIES[numericCategoryId as keyof typeof QUIZ_CATEGORIES]?.title;
 
+  let headerTitle;
+  if (isSolvedQuiz) {
+    headerTitle = '퀴즈 다시 풀기';
+  } else if (isTodayQuiz) {
+    headerTitle = '오늘의 퀴즈';
+  } else {
+    headerTitle = `퀴즈 (${categoryTitle})`;
+  }
+
   useSubpageHeader({
-    title: isTodayQuiz ? '오늘의 퀴즈' : `퀴즈 (${categoryTitle})`,
+    title: headerTitle,
   });
 
   useEffect(() => {
@@ -120,7 +155,9 @@ const QuizPlay: React.FC = () => {
     closeModal();
     if (hasNext) {
       nextQuestion();
-      refetch();
+      if (refetch) {
+        refetch();
+      }
     } else {
       navigate('/quiz');
     }
@@ -144,12 +181,15 @@ const QuizPlay: React.FC = () => {
             image={CorrectImage}
             explanation={quiz.explanation}
             onConfirm={
-              isTodayQuiz
+              isTodayQuiz || isSolvedQuiz
                 ? undefined
                 : () => handleSubmitSuccess(result.hasNext)
             }
             onClose={() => {
               closeModal();
+              if (isSolvedQuiz) {
+                navigate(-1);
+              }
               navigate('/quiz');
             }}
           />
@@ -178,10 +218,11 @@ const QuizPlay: React.FC = () => {
   }
 
   const isOXQuiz = quiz.type === 'OX';
+  const displayQuestionNumber = isSolvedQuiz ? 1 : questionNumber;
 
   return (
     <S.Container>
-      <S.QuestionNumber>문제 {questionNumber}.</S.QuestionNumber>
+      <S.QuestionNumber>문제 {displayQuestionNumber}.</S.QuestionNumber>
       <S.Question>{quiz.question}</S.Question>
       <S.AnswerGrid type={isOXQuiz ? 'ox' : 'multiple'}>
         {isOXQuiz ? (
@@ -220,10 +261,13 @@ const QuizPlay: React.FC = () => {
         <Button
           fullWidth
           size="large"
-          disabled={selectedAnswer === null || submitMutation.isPending}
+          disabled={
+            selectedAnswer === null ||
+            (!isSolvedQuiz && submitMutation.isPending)
+          }
           onClick={handleNextClick}
         >
-          다음
+          확인
         </Button>
       </S.ButtonWrapper>
     </S.Container>
