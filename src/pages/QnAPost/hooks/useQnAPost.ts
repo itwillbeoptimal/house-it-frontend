@@ -7,7 +7,7 @@ interface UseQnAPostProps {
   initialType: 'question' | 'answer';
   questionId?: number;
   initialData?: Partial<QnAPostForm>;
-  onSubmit?: (data: QnAPostForm) => Promise<void>;
+  onSubmit: (data: QnAPostForm) => Promise<void>;
 }
 
 interface UseQnAPostReturn {
@@ -62,11 +62,7 @@ const useQnAPost = ({
 
     setIsSubmitting(true);
     try {
-      if (onSubmit) {
-        await onSubmit(formData);
-      } else {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
+      await onSubmit(formData);
     } finally {
       setIsSubmitting(false);
     }
