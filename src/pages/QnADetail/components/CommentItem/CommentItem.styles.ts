@@ -27,3 +27,14 @@ export const CommentText = styled.div`
   line-height: 1.5;
   word-break: break-word;
 `;
+
+export const MenuIconWrapper = styled.div`
+  display: flex;
+  align-self: center;
+  padding: 4px;
+
+  & svg {
+    width: auto;
+    height: 12px;
+  }
+`;

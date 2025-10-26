@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { QnADetail, Answer } from '@/pages/QnADetail/types';
 import { formatTimeAgo } from '@/utils/dateUtils';
 import * as S from '@/pages/QnADetail/components/ContentCard/ContentCard.styles';
 import * as CommonStyles from '@/pages/QnADetail/components/Common.styles';
+import Dropdown from '@/components/Dropdown';
 import Profile from '@/pages/QnADetail/components/Profile';
 import ImageViewerModal from '@/pages/QnADetail/components/ImageViewerModal';
 import MenuIcon from '@/assets/icons/menu.svg?react';
@@ -33,8 +34,6 @@ const ContentCard: React.FC<ContentCardProps> = ({
   onAdopt,
 }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
 
   const isQuestion = type === 'question';
   const isAnswer = type === 'answer';
@@ -53,47 +52,21 @@ const ContentCard: React.FC<ContentCardProps> = ({
     setSelectedImage(null);
   };
 
-  const handleMenuClick = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const handleEdit = () => {
-    setIsMenuOpen(false);
-    onEdit?.();
-  };
-
-  const handleDelete = () => {
-    setIsMenuOpen(false);
-    onDelete?.();
-  };
-
-  const handleReport = () => {
-    setIsMenuOpen(false);
-    onReport?.();
-  };
-
-  const handleAdopt = () => {
-    setIsMenuOpen(false);
-    onAdopt?.();
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
-      }
-    };
-
-    if (isMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isMenuOpen]);
-
   const showMenu = canModify || canDelete || !canModify;
+
+  const menuItems = [];
+  if (canModify && onEdit) {
+    menuItems.push({ label: '수정', onClick: onEdit });
+  }
+  if (canDelete && onDelete) {
+    menuItems.push({ label: '삭제', onClick: onDelete });
+  }
+  if (!canModify && !canDelete && onReport) {
+    menuItems.push({ label: '신고', onClick: onReport });
+  }
+  if (canAdopt && onAdopt) {
+    menuItems.push({ label: '채택', onClick: onAdopt });
+  }
 
   return (
     <>
@@ -119,28 +92,15 @@ const ContentCard: React.FC<ContentCardProps> = ({
               </CommonStyles.CreatedAt>
             </S.AuthorMeta>
           </S.AuthorInfo>
-          {showMenu && (
-            <S.MenuWrapper ref={menuRef}>
-              <S.MenuButton onClick={handleMenuClick}>
-                <MenuIcon />
-              </S.MenuButton>
-              {isMenuOpen && (
-                <S.Dropdown>
-                  {canModify && (
-                    <S.DropdownItem onClick={handleEdit}>수정</S.DropdownItem>
-                  )}
-                  {canDelete && (
-                    <S.DropdownItem onClick={handleDelete}>삭제</S.DropdownItem>
-                  )}
-                  {!canModify && !canDelete && (
-                    <S.DropdownItem onClick={handleReport}>신고</S.DropdownItem>
-                  )}
-                  {canAdopt && (
-                    <S.DropdownItem onClick={handleAdopt}>채택</S.DropdownItem>
-                  )}
-                </S.Dropdown>
-              )}
-            </S.MenuWrapper>
+          {showMenu && menuItems.length > 0 && (
+            <Dropdown
+              trigger={
+                <S.MenuButton>
+                  <MenuIcon />
+                </S.MenuButton>
+              }
+              items={menuItems}
+            />
           )}
         </S.Header>
         {isQuestion && <S.Title>{questionData.title}</S.Title>}
