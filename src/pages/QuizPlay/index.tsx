@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import useSubpageHeader from '@/hooks/useSubpageHeader';
 import useModal from '@/hooks/useModal';
+import useBottomSheet from '@/hooks/useBottomSheet';
 import useQuizQuery from '@/hooks/queries/quiz/useQuizQuery';
 import useQuizByCategoryIdQuery from '@/hooks/queries/quiz/useQuizByCategoryIdQuery';
 import useTodayQuizIdQuery from '@/hooks/queries/quiz/useTodayQuizIdQuery';
@@ -9,10 +10,10 @@ import useQuizSubmitMutation from '@/hooks/mutations/quiz/useQuizSubmitMutation'
 import useQuizPlay from '@/pages/QuizPlay/hooks/useQuizPlay';
 import * as S from '@/pages/QuizPlay/QuizPlay.styles';
 import Button from '@/components/Button';
-import CorrectModalContent from '@/pages/QuizPlay/components/CorrectModalContent';
+import CorrectSheetContent from '@/pages/QuizPlay/components/CorrectSheetContent';
+import CorrectMessage from '@/pages/QuizPlay/components/CorrectMessage';
 import OIcon from '@/assets/icons/o.svg?react';
 import XIcon from '@/assets/icons/x.svg?react';
-import CorrectImage from '@/assets/images/correct.png';
 import { QUIZ_CATEGORIES } from '@/constants/categories';
 
 const QuizPlay: React.FC = () => {
@@ -22,8 +23,14 @@ const QuizPlay: React.FC = () => {
   }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { openModal, closeModal, alert, loading } = useModal();
+  const { alert, loading, closeModal } = useModal();
+  const { openBottomSheet, closeBottomSheet } = useBottomSheet();
   const [isReady, setIsReady] = useState(false);
+  const [showCorrectMessage, setShowCorrectMessage] = useState(false);
+  const [quizResult, setQuizResult] = useState<{ hasNext: boolean } | null>(
+    null,
+  );
+  const correctMessageTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const isTodayQuiz = location.pathname === '/quiz/play/today';
   const isSolvedQuiz = location.pathname === '/quiz/play/solved';
@@ -147,12 +154,20 @@ const QuizPlay: React.FC = () => {
     }
   }, [quiz, isReady]);
 
+  useEffect(() => {
+    return () => {
+      if (correctMessageTimerRef.current) {
+        clearTimeout(correctMessageTimerRef.current);
+      }
+    };
+  }, []);
+
   const handleAnswerClick = (answerIndex: number) => {
     selectAnswer(answerIndex);
   };
 
   const handleSubmitSuccess = (hasNext: boolean) => {
-    closeModal();
+    closeBottomSheet();
     if (hasNext) {
       nextQuestion();
       if (refetch) {
@@ -160,6 +175,47 @@ const QuizPlay: React.FC = () => {
       }
     } else {
       navigate('/quiz');
+    }
+  };
+
+  const openExplanationSheetWithResult = (result: { hasNext: boolean }) => {
+    if (!quiz) return;
+
+    const sheetContent = (
+      <CorrectSheetContent
+        explanation={quiz.explanation}
+        onConfirm={
+          isTodayQuiz || isSolvedQuiz
+            ? undefined
+            : () => handleSubmitSuccess(result.hasNext)
+        }
+        onClose={() => {
+          closeBottomSheet();
+          if (isSolvedQuiz) {
+            navigate(-1);
+          } else {
+            navigate('/quiz');
+          }
+        }}
+      />
+    );
+
+    openBottomSheet({
+      id: 'quiz-correct',
+      title: '정답 해설',
+      content: sheetContent,
+      disableBackdropClick: true,
+    });
+  };
+
+  const handleCorrectMessageClose = () => {
+    if (correctMessageTimerRef.current) {
+      clearTimeout(correctMessageTimerRef.current);
+      correctMessageTimerRef.current = null;
+    }
+    setShowCorrectMessage(false);
+    if (quizResult) {
+      openExplanationSheetWithResult(quizResult);
     }
   };
 
@@ -175,30 +231,14 @@ const QuizPlay: React.FC = () => {
           quizId: quiz.id,
           answer: userAnswer,
         });
-        const modalContent = (
-          <CorrectModalContent
-            title="정답입니다!"
-            image={CorrectImage}
-            explanation={quiz.explanation}
-            onConfirm={
-              isTodayQuiz || isSolvedQuiz
-                ? undefined
-                : () => handleSubmitSuccess(result.hasNext)
-            }
-            onClose={() => {
-              closeModal();
-              if (isSolvedQuiz) {
-                navigate(-1);
-              }
-              navigate('/quiz');
-            }}
-          />
-        );
-        openModal({
-          id: 'quiz-correct',
-          content: modalContent,
-          disableBackdropClick: true,
-        });
+
+        setQuizResult(result);
+        setShowCorrectMessage(true);
+
+        correctMessageTimerRef.current = setTimeout(() => {
+          setShowCorrectMessage(false);
+          openExplanationSheetWithResult(result);
+        }, 2500);
       } catch {
         alert({
           title: '퀴즈 제출 실패',
@@ -222,6 +262,9 @@ const QuizPlay: React.FC = () => {
 
   return (
     <S.Container>
+      {showCorrectMessage && (
+        <CorrectMessage onClose={handleCorrectMessageClose} />
+      )}
       <S.QuestionNumber>문제 {displayQuestionNumber}.</S.QuestionNumber>
       <S.Question>{quiz.question}</S.Question>
       <S.AnswerGrid type={isOXQuiz ? 'ox' : 'multiple'}>
