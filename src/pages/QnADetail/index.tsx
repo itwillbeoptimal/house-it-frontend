@@ -39,7 +39,6 @@ const QnADetail: React.FC = () => {
   const { openBottomSheet } = useBottomSheet();
 
   const [isMutating, setIsMutating] = useState(false);
-  const loadingModalIdRef = React.useRef<string | null>(null);
 
   const { data: questionData, isLoading: isLoadingQuestion } =
     useQuestionDetailQuery(numericQuestionId!, !isMutating);
@@ -70,6 +69,7 @@ const QnADetail: React.FC = () => {
         ? questionData.question.images.map((img) => img.imageUrl)
         : [],
       commentNum: questionData.question.commentNum,
+      isAuthor: questionData.question.isAuthor,
       canModify: questionData.authority.canModify,
       canDelete: questionData.authority.canDelete,
       canWrite: questionData.authority.canWrite,
@@ -92,6 +92,7 @@ const QnADetail: React.FC = () => {
           isAI: response.isAi,
           commentNum: response.commentNum,
           additionalMessageNum: response.additionalMessageNum,
+          followUpRoomId: response.followUpRoomId,
           canAdopt: response.authority.canAdopt,
           canModify: response.authority.canModify,
           canDelete: response.authority.canDelete,
@@ -103,8 +104,6 @@ const QnADetail: React.FC = () => {
   useEffect(() => {
     if ((isLoadingQuestion || isLoadingAnswers) && !isMutating) {
       const startTime = Date.now();
-      const modalId = `loading-modal-${Date.now()}`;
-      loadingModalIdRef.current = modalId;
 
       loading({
         loadingText: '게시글을 불러오고 있어요.',
@@ -115,10 +114,7 @@ const QnADetail: React.FC = () => {
         const elapsed = Date.now() - startTime;
         setTimeout(
           () => {
-            if (loadingModalIdRef.current === modalId) {
-              closeModal('loading-modal');
-              loadingModalIdRef.current = null;
-            }
+            closeModal('loading-modal');
           },
           Math.max(0, 500 - elapsed),
         );
@@ -143,20 +139,24 @@ const QnADetail: React.FC = () => {
           setIsMutating(true);
           await deleteQuestionMutation.mutateAsync(numericQuestionId);
 
-          alert({
-            title: '삭제 완료',
-            content: '질문이 삭제되었습니다.',
-            onConfirm: () => {
-              setIsMutating(false);
-              navigate('/qna');
-            },
-          });
+          setTimeout(() => {
+            alert({
+              title: '삭제 완료',
+              content: '질문이 삭제되었습니다.',
+              onConfirm: () => {
+                setIsMutating(false);
+                navigate('/qna');
+              },
+            });
+          }, 250);
         } catch {
           setIsMutating(false);
-          alert({
-            title: '삭제 실패',
-            content: '질문 삭제 중 오류가 발생했습니다.',
-          });
+          setTimeout(() => {
+            alert({
+              title: '삭제 실패',
+              content: '질문 삭제 중 오류가 발생했습니다.',
+            });
+          }, 250);
         }
       },
     });
@@ -185,21 +185,23 @@ const QnADetail: React.FC = () => {
           setIsMutating(true);
           await deleteAnswerMutation.mutateAsync(answerId);
 
-          alert({
-            title: '삭제 완료',
-            content: '답변이 삭제되었습니다.',
-            onConfirm: () => {
-              queryClient.invalidateQueries({ queryKey: ['answers'] });
-              queryClient.invalidateQueries({ queryKey: ['question'] });
-              setIsMutating(false);
-            },
-          });
+          setTimeout(() => {
+            alert({
+              title: '삭제 완료',
+              content: '답변이 삭제되었습니다.',
+            });
+          }, 250);
         } catch {
+          setTimeout(() => {
+            alert({
+              title: '삭제 실패',
+              content: '답변 삭제 중 오류가 발생했습니다.',
+            });
+          }, 250);
+        } finally {
+          await queryClient.invalidateQueries({ queryKey: ['answers'] });
+          await queryClient.invalidateQueries({ queryKey: ['question'] });
           setIsMutating(false);
-          alert({
-            title: '삭제 실패',
-            content: '답변 삭제 중 오류가 발생했습니다.',
-          });
         }
       },
     });
@@ -216,22 +218,24 @@ const QnADetail: React.FC = () => {
           setIsMutating(true);
           await adoptAnswerMutation.mutateAsync(answerId);
 
-          alert({
-            title: '채택 완료',
-            content: '답변이 채택되었습니다.',
-            onConfirm: () => {
-              queryClient.invalidateQueries({ queryKey: ['answers'] });
-              queryClient.invalidateQueries({ queryKey: ['question'] });
-              queryClient.invalidateQueries({ queryKey: ['questions'] });
-              setIsMutating(false);
-            },
-          });
+          setTimeout(() => {
+            alert({
+              title: '채택 완료',
+              content: '답변이 채택되었습니다.',
+            });
+          }, 250);
         } catch {
+          setTimeout(() => {
+            alert({
+              title: '채택 실패',
+              content: '답변 채택 중 오류가 발생했습니다.',
+            });
+          }, 250);
+        } finally {
+          await queryClient.invalidateQueries({ queryKey: ['answers'] });
+          await queryClient.invalidateQueries({ queryKey: ['question'] });
+          await queryClient.invalidateQueries({ queryKey: ['questions'] });
           setIsMutating(false);
-          alert({
-            title: '채택 실패',
-            content: '답변 채택 중 오류가 발생했습니다.',
-          });
         }
       },
     });
@@ -269,6 +273,9 @@ const QnADetail: React.FC = () => {
   const handleAnswerFollowUp = (answerId: number) => {
     if (!numericQuestionId) return;
 
+    const answer = answers.find((a) => a.id === answerId);
+    const followUpRoomId = answer?.followUpRoomId || null;
+
     openBottomSheet({
       id: 'answer-followup',
       title: '추가 질문',
@@ -276,6 +283,8 @@ const QnADetail: React.FC = () => {
         <FollowUpContentWrapper
           questionId={numericQuestionId}
           answerId={answerId}
+          followUpRoomId={followUpRoomId}
+          isQuestionAuthor={question?.isAuthor ?? false}
         />
       ),
       hasMaxHeight: true,
@@ -398,13 +407,25 @@ const CommentsContentWrapper: React.FC<{
 const FollowUpContentWrapper: React.FC<{
   questionId: number;
   answerId: number;
-}> = ({ questionId, answerId }) => {
-  const { alert } = useModal();
+  followUpRoomId: number | null;
+  isQuestionAuthor: boolean;
+}> = ({
+  questionId,
+  answerId,
+  followUpRoomId: initialFollowUpRoomId,
+  isQuestionAuthor,
+}) => {
   const queryClient = useQueryClient();
   const createAdditionalQuestionMessageMutation =
     useCreateAdditionalQuestionMessageMutation();
 
-  const [followUpRoomId, setFollowUpRoomId] = useState<number | null>(null);
+  const [followUpRoomId, setFollowUpRoomId] = useState<number | null>(
+    initialFollowUpRoomId,
+  );
+
+  useEffect(() => {
+    setFollowUpRoomId(initialFollowUpRoomId);
+  }, [initialFollowUpRoomId]);
 
   const { data: additionalQuestionData } = useAdditionalQuestionQuery(
     followUpRoomId!,
@@ -424,47 +445,32 @@ const FollowUpContentWrapper: React.FC<{
     }));
   }, [additionalQuestionData]);
 
-  const lastMessageIsQuestioner =
-    messages.length > 0 ? messages[messages.length - 1].isQuestioner : null;
-
   let shouldShowInput = false;
 
   if (additionalQuestionData) {
     const { canWrite, isThirdParty } = additionalQuestionData.authority;
 
     if (!isThirdParty && canWrite) {
-      if (messages.length === 0) {
-        shouldShowInput = true;
-      } else if (lastMessageIsQuestioner === false) {
-        shouldShowInput = true;
-      }
+      shouldShowInput = true;
     }
-  } else {
+  } else if (isQuestionAuthor) {
     shouldShowInput = true;
   }
 
   const handleMessageSubmit = async (content: string) => {
-    try {
-      const response =
-        await createAdditionalQuestionMessageMutation.mutateAsync({
-          questionId,
-          responseId: answerId,
-          content,
-        });
+    const response = await createAdditionalQuestionMessageMutation.mutateAsync({
+      questionId,
+      responseId: answerId,
+      content,
+    });
 
-      if (response.followUpRoomId) {
-        setFollowUpRoomId(response.followUpRoomId);
-      }
-
-      queryClient.invalidateQueries({
-        queryKey: ['additional-question', followUpRoomId, questionId],
-      });
-    } catch {
-      alert({
-        title: '메시지 전송 실패',
-        content: '메시지 전송 중 오류가 발생했습니다.',
-      });
+    if (response.followUpRoomId && response.followUpRoomId !== followUpRoomId) {
+      setFollowUpRoomId(response.followUpRoomId);
     }
+
+    await queryClient.invalidateQueries({
+      queryKey: ['additional-question', followUpRoomId, questionId],
+    });
   };
 
   return (
