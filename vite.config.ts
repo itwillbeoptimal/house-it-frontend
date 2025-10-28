@@ -111,6 +111,7 @@ export default defineConfig(({ mode, command }) => {
       },
       chunkSizeWarningLimit: 1000,
     },
+    assetsInclude: ['**/*.lottie'],
     server: {
       proxy: {
         '/api': {
