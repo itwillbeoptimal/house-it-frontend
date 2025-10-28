@@ -81,6 +81,7 @@ export interface QuestionDetailResponse {
     images?: ImageItem[];
     createdAt: string;
     commentNum: number;
+    isAuthor: boolean;
   };
   authority: {
     canModify: boolean;
@@ -225,6 +226,7 @@ export interface AnswerItem {
   isAi: boolean;
   commentNum: number;
   additionalMessageNum: number;
+  followUpRoomId: number;
   authority: {
     canAdopt: boolean;
     canModify: boolean;
