@@ -15,6 +15,7 @@ export const ContentArea = styled.div`
 
 export const MagazineGrid = styled.div`
   display: grid;
+  align-content: start;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 `;
