@@ -7,6 +7,20 @@ export const Container = styled.div`
   border-radius: 12px;
 `;
 
+export const AdoptedAnswer = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  gap: 4px;
+  margin-bottom: 16px;
+  background-color: ${(props) => props.theme.COLORS.MAIN.TERTIARY};
+  border: 1px solid ${(props) => props.theme.COLORS.MAIN.PRIMARY};
+  border-radius: 8px;
+  color: ${(props) => props.theme.COLORS.MAIN.PRIMARY};
+  font-weight: 500;
+  font-size: 12px;
+`;
+
 export const Header = styled.div`
   display: flex;
   align-items: center;

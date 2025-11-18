@@ -8,6 +8,7 @@ interface AnswerListProps {
   answers: Answer[];
   onAnswerComments: (answerId: number) => void;
   onAnswerFollowUp: (answerId: number) => void;
+  onAnswerRecommend: (answerId: number) => void;
   onAnswerEdit: (answerId: number) => void;
   onAnswerDelete: (answerId: number) => void;
   onAnswerAdopt: (answerId: number) => void;
@@ -18,6 +19,7 @@ const AnswerList: React.FC<AnswerListProps> = ({
   answers,
   onAnswerComments,
   onAnswerFollowUp,
+  onAnswerRecommend,
   onAnswerEdit,
   onAnswerDelete,
   onAnswerAdopt,
@@ -35,6 +37,7 @@ const AnswerList: React.FC<AnswerListProps> = ({
               type="answer"
               onCommentsClick={() => onAnswerComments(answer.id)}
               onFollowUpClick={() => onAnswerFollowUp(answer.id)}
+              onRecommendClick={() => onAnswerRecommend(answer.id)}
               onEdit={() => onAnswerEdit(answer.id)}
               onDelete={() => onAnswerDelete(answer.id)}
               onAdopt={() => onAnswerAdopt(answer.id)}

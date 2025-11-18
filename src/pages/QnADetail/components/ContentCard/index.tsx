@@ -8,8 +8,10 @@ import Dropdown from '@/components/Dropdown';
 import Profile from '@/pages/QnADetail/components/Profile';
 import ImageViewerModal from '@/pages/QnADetail/components/ImageViewerModal';
 import MenuIcon from '@/assets/icons/menu.svg?react';
+import AdoptedIcon from '@/assets/icons/adopted.svg?react';
 import CommentIcon from '@/assets/icons/comment.svg?react';
 import QuestionIcon from '@/assets/icons/question.svg?react';
+import ThumbsUpIcon from '@/assets/icons/thumbs-up.svg?react';
 import SparkleIcon from '@/assets/icons/sparkle.svg?react';
 
 interface ContentCardProps {
@@ -17,6 +19,7 @@ interface ContentCardProps {
   type: 'question' | 'answer';
   onCommentsClick: () => void;
   onFollowUpClick?: () => void;
+  onRecommendClick?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
   onReport?: () => void;
@@ -28,6 +31,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
   type,
   onCommentsClick,
   onFollowUpClick,
+  onRecommendClick,
   onEdit,
   onDelete,
   onReport,
@@ -71,6 +75,12 @@ const ContentCard: React.FC<ContentCardProps> = ({
   return (
     <>
       <S.Container>
+        {answerData.isAdopted && (
+          <S.AdoptedAnswer>
+            <AdoptedIcon />
+            질문 작성자가 채택한 답변입니다.
+          </S.AdoptedAnswer>
+        )}
         <S.Header>
           <S.AuthorInfo>
             <Profile
@@ -122,11 +132,17 @@ const ContentCard: React.FC<ContentCardProps> = ({
             <CommentIcon />
             댓글 {data.commentNum}
           </S.ActionButton>
-          {isAnswer && onFollowUpClick && (
-            <S.ActionButton onClick={onFollowUpClick}>
-              <QuestionIcon />
-              추가 질문 {answerData.additionalMessageNum}
-            </S.ActionButton>
+          {isAnswer && (
+            <>
+              <S.ActionButton onClick={onFollowUpClick}>
+                <QuestionIcon />
+                추가 질문 {answerData.additionalMessageNum}
+              </S.ActionButton>
+              <S.ActionButton onClick={onRecommendClick}>
+                <ThumbsUpIcon />
+                추천 {answerData.likeCount}
+              </S.ActionButton>
+            </>
           )}
         </S.ActionBar>
       </S.Container>

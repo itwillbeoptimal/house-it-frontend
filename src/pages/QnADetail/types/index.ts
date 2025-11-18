@@ -33,7 +33,9 @@ export interface Answer {
   createdAt: string;
   images?: string[];
   isAI?: boolean;
+  isAdopted?: boolean;
   commentNum: number;
+  likeCount: number;
   additionalMessageNum: number;
   canAdopt: boolean;
   canModify: boolean;

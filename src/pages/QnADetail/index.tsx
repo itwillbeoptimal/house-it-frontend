@@ -11,6 +11,7 @@ import useAdditionalQuestionQuery from '@/hooks/queries/qna/useAdditionalQuestio
 import {
   useDeleteAnswerMutation,
   useAdoptAnswerMutation,
+  useRecommendAnswerMutation,
 } from '@/hooks/mutations/qna/useAnswerMutations';
 import { useDeleteQuestionMutation } from '@/hooks/mutations/qna/useQuestionMutations';
 import {
@@ -52,6 +53,7 @@ const QnADetail: React.FC = () => {
   const deleteAnswerMutation = useDeleteAnswerMutation();
   const adoptAnswerMutation = useAdoptAnswerMutation();
   const deleteQuestionMutation = useDeleteQuestionMutation();
+  const recommendAnswerMutation = useRecommendAnswerMutation();
 
   const question = useMemo(() => {
     if (!questionData) return null;
@@ -90,7 +92,9 @@ const QnADetail: React.FC = () => {
             : [],
           imageDetails: response.images || [],
           isAI: response.isAi,
+          isAdopted: response.responseAdopt,
           commentNum: response.commentNum,
+          likeCount: response.likeCount,
           additionalMessageNum: response.additionalMessageNum,
           followUpRoomId: response.followUpRoomId,
           canAdopt: response.authority.canAdopt,
@@ -291,6 +295,32 @@ const QnADetail: React.FC = () => {
     });
   };
 
+  const handleAnswerRecommend = (answerId: number) => {
+    confirm({
+      title: '답변 추천',
+      content: '이 답변을 추천하시겠습니까?',
+      onConfirm: async () => {
+        if (recommendAnswerMutation.isPending) return;
+
+        try {
+          setIsMutating(true);
+          await recommendAnswerMutation.mutateAsync(answerId);
+        } catch {
+          setTimeout(() => {
+            alert({
+              title: '추천 실패',
+              content: '답변 추천 중 오류가 발생했습니다.',
+            });
+          }, 250);
+        } finally {
+          await queryClient.invalidateQueries({ queryKey: ['answers'] });
+          await queryClient.invalidateQueries({ queryKey: ['question'] });
+          setIsMutating(false);
+        }
+      },
+    });
+  };
+
   const handleWriteAnswer = () => {
     if (!numericQuestionId) return;
     navigate(`/qna/${numericQuestionId}/answer`);
@@ -314,6 +344,7 @@ const QnADetail: React.FC = () => {
         answers={answers}
         onAnswerComments={handleAnswerComments}
         onAnswerFollowUp={handleAnswerFollowUp}
+        onAnswerRecommend={handleAnswerRecommend}
         onAnswerEdit={handleAnswerEdit}
         onAnswerDelete={handleAnswerDelete}
         onAnswerAdopt={handleAnswerAdopt}
@@ -381,15 +412,19 @@ const CommentsContentWrapper: React.FC<{
             commentType: targetType,
           });
 
-          alert({
-            title: '삭제 완료',
-            content: '댓글이 삭제되었습니다.',
-          });
+          setTimeout(() => {
+            alert({
+              title: '삭제 완료',
+              content: '댓글이 삭제되었습니다.',
+            });
+          }, 250);
         } catch {
-          alert({
-            title: '삭제 실패',
-            content: '댓글 삭제 중 오류가 발생했습니다.',
-          });
+          setTimeout(() => {
+            alert({
+              title: '삭제 실패',
+              content: '댓글 삭제 중 오류가 발생했습니다.',
+            });
+          }, 250);
         }
       },
     });
@@ -435,14 +470,32 @@ const FollowUpContentWrapper: React.FC<{
   const messages = useMemo(() => {
     if (!additionalQuestionData) return [];
 
-    return additionalQuestionData.messageList.map((message) => ({
-      id: message.messageId,
-      content: message.content,
-      author: message.isQuestioner ? '질문자' : '답변자',
-      isQuestioner: message.isQuestioner,
-      isAnswered: !message.isQuestioner,
-      createdAt: message.createdAt,
-    }));
+    const { messageList } = additionalQuestionData;
+    const followUpQuestions = [];
+
+    for (let i = 0; i < messageList.length; i += 2) {
+      const questionMessage = messageList[i];
+      const answerMessage = messageList[i + 1];
+
+      followUpQuestions.push({
+        id: questionMessage.messageId,
+        content: questionMessage.content,
+        author: '질문자',
+        isAnswered: !!answerMessage,
+        createdAt: questionMessage.createdAt,
+        answer: answerMessage
+          ? {
+              id: answerMessage.messageId,
+              content: answerMessage.content,
+              author: '답변자',
+              createdAt: answerMessage.createdAt,
+              isAI: false,
+            }
+          : undefined,
+      });
+    }
+
+    return followUpQuestions;
   }, [additionalQuestionData]);
 
   let shouldShowInput = false;
