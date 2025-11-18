@@ -234,6 +234,7 @@ const Search: React.FC = () => {
             </S.ContentArea>
           </>
         )}
+        <S.ObserverTrigger ref={magazineObserverRef} />
       </>
     );
   };
