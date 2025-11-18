@@ -284,7 +284,12 @@ const QnAPost: React.FC<QnAPostProps> = ({
         {isQuestionForm && (
           <S.FormSection>
             <S.LabelContainer>
-              <S.Label>카테고리</S.Label>
+              <S.Label>
+                카테고리
+                <S.Required>
+                  <RequiredIcon />
+                </S.Required>
+              </S.Label>
             </S.LabelContainer>
             <Select
               value={formData.categoryId || ''}
