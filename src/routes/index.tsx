@@ -20,6 +20,9 @@ import My from '@/pages/My';
 import EditProfile from '@/pages/EditProfile';
 import MagazineScrapBox from '@/pages/MagazineScrapBox';
 import QuizArchive from '@/pages/QuizArchive';
+import Terms from '@/pages/Terms';
+import Privacy from '@/pages/Privacy';
+import DeleteAccount from '@/pages/DeleteAccount';
 
 const AppRoutes = () => {
   return (
@@ -164,6 +167,16 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/my/delete-account"
+          element={
+            <ProtectedRoute>
+              <DeleteAccount />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
       </Route>
     </Routes>
   );
