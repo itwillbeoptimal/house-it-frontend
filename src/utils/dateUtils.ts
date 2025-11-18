@@ -1,17 +1,32 @@
 export const formatDate = (isoString: string): string => {
-  const date = new Date(isoString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-
-  return `${year}. ${month}. ${day}.`;
+  const utcString = isoString.endsWith('Z') ? isoString : `${isoString}Z`;
+  const date = new Date(utcString);
+  const options: Intl.DateTimeFormatOptions = {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  };
+  const [year, month, day] = date
+    .toLocaleDateString('ko-KR', options)
+    .split('. ');
+  return `${year}. ${month}. ${day}`;
 };
 
 export const formatTimeAgo = (isoString: string): string => {
+  const utcString = isoString.endsWith('Z') ? isoString : `${isoString}Z`;
   const now = new Date();
-  const createdAt = new Date(isoString);
+  const createdAt = new Date(utcString);
+
+  const kstNow = new Date(
+    now.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }),
+  );
+  const kstCreatedAt = new Date(
+    createdAt.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }),
+  );
+
   const diffInMinutes = Math.floor(
-    (now.getTime() - createdAt.getTime()) / (1000 * 60),
+    (kstNow.getTime() - kstCreatedAt.getTime()) / (1000 * 60),
   );
 
   if (diffInMinutes < 1) return '방금 전';
