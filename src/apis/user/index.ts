@@ -56,3 +56,7 @@ export const updateUserInfo = async (
 export const updateFcmToken = async (data: UpdateFcmTokenRequest) => {
   await apiClient.post('/api/user/device', data);
 };
+
+export const deleteUserAccount = async () => {
+  await apiClient.post('/api/auth/withdraw');
+};
