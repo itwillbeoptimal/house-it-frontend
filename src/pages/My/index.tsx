@@ -56,7 +56,9 @@ const My: React.FC = () => {
     });
   };
 
-  const handleDeleteAccount = () => {};
+  const handleDeleteAccount = () => {
+    navigate('/my/delete-account');
+  };
 
   const handlePushNotificationToggle = async (checked: boolean) => {
     const permission = getNotificationPermission();
