@@ -6,6 +6,7 @@ import useMagazineScrapMutation from '@/hooks/mutations/magazine/useMagazineScra
 import { formatDate } from '@/utils/dateUtils';
 import * as S from '@/pages/MagazineDetail/MagazineDetail.styles';
 import HTMLContent from '@/pages/MagazineDetail/components/HTMLContent';
+import ShareIcon from '@/assets/icons/share.svg?react';
 import BookmarkIcon from '@/assets/icons/bookmark.svg?react';
 import DefaultProfileImage from '@/assets/images/default-profile.png';
 
@@ -19,6 +20,13 @@ const MagazineDetail: React.FC = () => {
 
   const { data, isError } = useMagazineDetailQuery(numericMagazineId!);
   const scrapMutation = useMagazineScrapMutation();
+
+  const handleShare = async () => {
+    await navigator.share({
+      title: data?.magazineTitle,
+      url: window.location.href,
+    });
+  };
 
   const handleScrapToggle = async () => {
     if (!numericMagazineId) return;
@@ -38,13 +46,19 @@ const MagazineDetail: React.FC = () => {
           <S.Title>{data.magazineTitle}</S.Title>
           <S.Subtitle>{data.magazineSubtitle}</S.Subtitle>
         </S.HeaderContent>
-        <S.BookmarkButton
-          isBookmarked={isBookmarked}
-          onClick={handleScrapToggle}
-          disabled={scrapMutation.isPending}
-        >
-          <BookmarkIcon />
-        </S.BookmarkButton>
+        <S.ActionButtonsWrapper>
+          <S.ShareButton onClick={handleShare}>
+            <ShareIcon />
+            공유
+          </S.ShareButton>
+          <S.BookmarkButton
+            isBookmarked={isBookmarked}
+            onClick={handleScrapToggle}
+            disabled={scrapMutation.isPending}
+          >
+            <BookmarkIcon />
+          </S.BookmarkButton>
+        </S.ActionButtonsWrapper>
       </S.Header>
       <S.AuthorInfo>
         <S.ProfileWrapper>

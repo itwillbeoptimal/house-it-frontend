@@ -31,9 +31,35 @@ export const Subtitle = styled.h2`
   color: ${(props) => props.theme.COLORS.LABEL.SECONDARY};
 `;
 
-export const BookmarkButton = styled.button<{ isBookmarked: boolean }>`
+export const ActionButtonsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding-left: 8px;
+  gap: 8px;
+`;
 
+export const ShareButton = styled.button`
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  height: 21px;
+  padding: 0 8px;
+  gap: 2px;
+  background-color: white;
+  border: 1.5px solid ${(props) => props.theme.COLORS.MAIN.PRIMARY};
+  border-radius: 12px;
+  color: ${(props) => props.theme.COLORS.MAIN.PRIMARY};
+  font-weight: 700;
+  font-size: 10px;
+`;
+
+export const BookmarkButton = styled.button<{ isBookmarked: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
   & svg {
     width: 28px;
     height: 28px;
